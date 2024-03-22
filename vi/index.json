@@ -1,0 +1,260 @@
+[
+{
+	"uri": "/vi/1-introduce/",
+	"title": "Giới thiệu",
+	"tags": [],
+	"description": "",
+	"content": "Ứng dụng Web 3 Tier Khi triển khai một ứng dụng Web trên nền tảng đám mây, không chỉ cần có một ứng dụng có nội dung và công nghệ tốt mà còn cần phải xem xét kiến trúc và môi trường triển khai. Các yếu tố chính ảnh hưởng đến quyết định về kiến trúc bao gồm:\nKhả năng mở rộng\nKhả năng mở rộng hoặc thu nhỏ của ứng dụng là gì? Thời gian cần thiết để quản lý ứng dụng? Sự khả dụng\nTính sẵn sàng của ứng dụng. Khả năng hoạt động ổn định trong thời gian dài. Khả năng tự động phục hồi khi gặp sự cố. Khả năng bảo mật\nBảo mật tổng thể và từng phần của ứng dụng một cách riêng biệt và hiệu quả. Mức độ tổn thất khi xảy ra tấn công. Ứng dụng Web 3 Tier cung cấp khả năng mở rộng, sự khả dụng và bảo mật bằng cách phân chia ứng dụng thành các Availability Zone (AZ) khác nhau và chia thành 3 tầng phục vụ các chức năng khác nhau mà hoàn toàn độc lập. Khi một AZ gặp sự cố, ứng dụng có khả năng tự động mở rộng tài nguyên sang AZ khác mà không ảnh hưởng đến các tầng ứng dụng khác. Mỗi tầng có một nhóm bảo mật riêng chỉ cho phép lưu lượng vào/ra cần thiết để thực hiện các nhiệm vụ cụ thể.\nTầng Web/Presentation: Chứa các yếu tố mà người dùng nhìn thấy của ứng dụng, như máy chủ web và giao diện/người dùng. Tầng Ứng dụng: Chứa phần mềm máy chủ và mã nguồn ứng dụng cần để xử lý dữ liệu và chạy chức năng. Tầng Dữ liệu: Chứa và quản lý dữ liệu ứng dụng, thường là nơi lưu trữ cơ sở dữ liệu. Trong các mục nhỏ của phần giới thiệu chúng ta sẽ đi tìm hiểu các công nghệ được ứng dụng trong quá trình triển khai ứng dụng Web 3 Tier.\nNội dung VPC EC2-Bastion Host-Database Load Blacing-Autoscaling Group "
+},
+{
+	"uri": "/vi/5-internalloadblacingandautoscaling/5.1-appterami/",
+	"title": "Tạo App Tier AMI",
+	"tags": [],
+	"description": "",
+	"content": " Truy cập giao diện EC2 Console Tại bảng điều hướng bên trái chọn EC2 Chọn App Instance Từ tab Actions, chọn Image and Templates \u0026gt; Image Trong tab Create image hiện ra Image name, nhập tên AppTierImage Image description, nhập mô tả Di chuyển đến cuối trang Create image "
+},
+{
+	"uri": "/vi/4-appdeployment/4.1-bastionhost/",
+	"title": "Tạo Bastion Host",
+	"tags": [],
+	"description": "",
+	"content": "Như đã được giới thiệu Bastion Host là một điểm trung gian truy cập giúp bảo vệ Private Instance\nTạo máy chủ ảo EC2\nTruy cập giao diện Amazon EC2\nTruy cập EC2 \u0026gt; Instances \u0026gt; Launch an instance\nTrong giao diện Launch an instance Name, nhập tên Bastion Host Phần Application and OS Images Quick Start, chọn Amazon Linux Amazon Machine Image (AMI), chọn Amazon Linux 2 AMI Instance type, chọn t2.micro Key pair, Create new key pair nhập tên Bastion-Key và lưu về máy Phần Network settings - VPC, chọn FCJ-WS-1 VPC - Subnet, chọn Public Subnet 1 - Auto-assign public IP, Enable - Firewall (security groups), chọn Bastion-SG Phần Advanced details IAM instance profile, chọn FCJ-WS-Role tạo ở bước 2.2 Review Instance trong Summary và Launch instance Đăng nhập vào EC2\n2.1 Chỉnh sửa quyền truy cập file Key Pair\nChọn file key pair vừa tải về, nhấp chuột phải và chọn Properties Trong cửa sổ hiện ra, chọn tab Security \u0026gt; Advanced Trong cửa sổ Advanced Setting Security, chọn Disable inheritance \u0026gt; Removed all inherited permission from this object \u0026gt; Add Trong cửa sổ Permission Entry, nhấp Select a principal Trong cửa sổ Select User or Group, nhập admin vào ô Enter the object \u0026gt; nhấp Check Names \u0026gt; OK Trở về cửa sổ Permission Entry, chọn Full control, OK 2.2 SSH vào Instance bằng trình CMD\nChọn vào Instance vừa tạo trong EC2 console, nhấp vào Connect Chọn Tab SSH Client, copy và lưu lệnh SSH Mở trình CMD tại nơi chứa file Key pair, past đoạn mã SSH vừa copy để tiến hành đăng nhập vào EC2\nĐăng nhập thành công vào EC2\n"
+},
+{
+	"uri": "/vi/2-prerequiste/2.1-creates3bucket/",
+	"title": "Tạo S3 Bucket",
+	"tags": [],
+	"description": "",
+	"content": "S3 Bucket là nơi lưu trữ file cài đặt sẽ được tải về từ các EC2. Tải mã nguồn tại địa chỉ Github sau và đưa lên S3 Bucket.\nTạo S3 Bucket\nTại bảng điều khiển AWS Truy cập Amazon S3 \u0026gt; Buckets \u0026gt; Create bucket Trong bảng tạo S3 Bucket AWS Region, nhập Asia Pacific (Sydney) ap-southeast-2 Bucket name, nhập fcj-ws-1 Di chuyển đến cuối trang Create bucket Tải code từ Github\nTải mã nguồn từ Github về môi trường Local. Nếu chưa cài đặt git, bạn có thể tải file zip và giải nén. git clone https://github.com/aws-samples aws-three-tier-web-architecture-workshop.git Đưa code từ local lên S3 Bucket\nTruy cập Amazon S3 \u0026gt; Buckets \u0026gt; fcj-ws-1 \u0026gt; Upload Chọn Add folder Trong cửa sổ hiện lên chọn đường dẫn đến folder application code và tải lên "
+},
+{
+	"uri": "/vi/3-databasedeployment/3.1-subnetsgroup/",
+	"title": "Tạo Subnets Group",
+	"tags": [],
+	"description": "",
+	"content": "Subnets Group quản lý việc định tuyến cho các Instance của cơ sở dữ liệu. Đóng vai trò tăng tính khả dụng cho Database.\nTruy cập giao diện Amazon RDS Truy cập RDS \u0026gt; Subnet groups \u0026gt; Create DB subnet group Trong giao diện Create DB subnet group Name, nhập tên Database Subnet Description, nhập mô tả cho Subnets Group VPC, chọn FCJ-WS-1 VPC Availability Zones, chọn ap-southeast-2a và ap-southeast-2b tương ứng 2 AZ trong VPC Subnets, chọn Private Subnet 3 và Private Subnet 4 trong Database Tier Di chuyển đến cuối trang chọn Creat "
+},
+{
+	"uri": "/vi/7-externalloadblacingandautoscaling/7.1-appterami/",
+	"title": "Tạo Web Tier AMI",
+	"tags": [],
+	"description": "",
+	"content": " Truy cập giao diện EC2 Console Ở bảng điều hướng bên trái chọn EC2 Chọn Web Instance vừa tạo Từ tab Actions, chọn Image and Templates \u0026gt; Image Trong tab Create image hiện ra Image name, nhập tên WebTierImage Image description, nhập mô tả Di chuyển đến cuối trang Create image "
+},
+{
+	"uri": "/vi/6-webdeployment/6.1-webinstancedeployment/",
+	"title": "Triển khai App Instance",
+	"tags": [],
+	"description": "",
+	"content": "1.Cập nhập file cấu hình\nCấu hình file bằng cách mở tệp application-code/nginx.conf. Tại dòng 58 và thay thế [INTERNAL-LOADBALANCER-DNS] bằng địa chỉ Internal Load Blacing DNS. Tạo máy chủ ảo EC2\nTruy cập giao diện Amazon EC2\nTruy cập EC2 \u0026gt; Instances \u0026gt; Launch an instance\nTrong giao diện Launch an instance Name, nhập tên App Instance Phần Application and OS Images Quick Start, chọn Amazon Linux Amazon Machine Image (AMI), chọn Amazon Linux 2 AMI Instance type, chọn t2.micro Key pair, Create new key pair nhập tên Web-Key và lưu về máy Phần Network settings - VPC, chọn FCJ-WS-1 VPC - Subnet, chọn Public Subnet 1 - Auto-assign public IP, Enable - Firewall (security groups), chọn Web-SG Phần Advanced details IAM instance profile, chọn FCJ-WS-Role tạo ở bước 2.2 Review Instance trong Summary và Launch instance Đăng nhập vào EC2\nTương tự 6.2 chỉnh quyền truy cập Key Pair SSH vào Instance thành công "
+},
+{
+	"uri": "/vi/1-introduce/1.1-vpc/",
+	"title": "Virtual Private Cloud (VPC)",
+	"tags": [],
+	"description": "",
+	"content": "Trong AWS, Virtual Private Cloud (VPC) là dịch vụ quan trọng, tạo môi trường đám mây riêng tư để triển khai tài nguyên điện toán. Ứng dụng Web 3-tầng triển khai trên 2 Availability Zones (AZ) khác nhau để tăng tính sẵn sàng và khả năng khôi phục sau sự cố. Với tổng cộng 6 Subnets, gồm 2 Subnets public cho tầng Web và 4 Subnets private cho tầng Ứng dụng và Database, sự phân chia này giúp tách biệt và quản lý hiệu quả ứng dụng.\nCác thành phần của VPC Subnets (Các mạng con): Subnets trong VPC là các phần nhỏ của mạng được chia ra để quản lý và phân phối tài nguyên của ứng dụng. Trong kiến trúc Web 3-tầng, chúng ta có tổng cộng 6 Subnets, chia thành 3 tầng:\nTầng Web: Gồm 2 Subnets public, phục vụ cho triển khai máy chủ web và giao diện người dùng. Tầng Ứng dụng: Bao gồm 2 Subnets private, được sử dụng cho backend. Tầng Dữ liệu: Bao gồm 2 Subnets private, được sử dụng cho database. Route Tables (Bảng định tuyến): Xác định cách dữ liệu được chuyển tiếp giữa các mạng con trong VPC và ra ngoài Internet. Quan trọng trong việc quản lý luồng thông tin giữa các thành phần khác nhau của ứng dụng Web.\nInternet Gateway (Cổng Internet): Cho phép tài nguyên trong VPC truy cập Internet. Quan trọng cho tầng Web, nơi các máy chủ web giao tiếp với người dùng.\nNAT Gateway (Cổng NAT): Cho phép tài nguyên ở tầng Ứng dụng truy cập Internet mà không tiếp xúc trực tiếp với nó, đảm bảo tính bảo mật.\nSecurity Groups (Nhóm bảo mật): Quản lý lưu lượng mạng đến và đi từ các tài nguyên trong VPC, cho phép xác định các quy tắc truy cập.\n"
+},
+{
+	"uri": "/vi/",
+	"title": "Xây dựng kiến trúc ứng dụng web 3 tầng bằng AWS",
+	"tags": [],
+	"description": "",
+	"content": "Xây dựng kiến trúc ứng dụng web 3 tầng bằng AWS Tổng quan Trong workshop này, chúng ta sẽ triển khai một ứng dụng web 3-tầng trên nền tảng đám mây AWS. Dựa trên kiến trúc mạng ảo VPC và các thành phần bảo mật an toàn Security Group, IAM và Bastion Host. Từ đó triển khai các tầng Database, Backend và Frontend bằng Aurora Database và máy chủ ảo EC2. Kết hợp tối ưu hiệu suất và tăng độ khả dụng của ứng dụng web thông qua việc sử dụng các công cụ như Load Balancer, Autoscaling và Target Group.\nNội dung Giới thiệu Các bước chuẩn bị Triển khai Database Tier Triển khai App Tier Cấu hình Internal Load Blacing và Auto Scaling Triển khai Web Tier Cấu hình External Load Blacing and AutoScaling Kiểm tra khả năng hoạt động Dọn dẹp tài nguyên "
+},
+{
+	"uri": "/vi/2-prerequiste/2.2-createiamrole/",
+	"title": " Tạo IAM Role cho Instance EC2",
+	"tags": [],
+	"description": "",
+	"content": "Tạo IAM Role để gán cho các Instance, qua đó cung cấp quyền truy cập vào các dịch vụ AWS.\nTạo IAM role Truy cập vào dịch vụ IAM trên bảng điều khiển AWS Truy cập IAM \u0026gt; Roles \u0026gt; Create role Bước 1: Select trusted entity Chọn AWS Service Service or use case, nhập EC2 Bước 2: Add permissions Nhập và chọn lần lượt AmazonSSMManagedInstanceCore, AmazonS3ReadOnlyAccess để cung cấp quyền truy cập tương ứng. Bước 3: Name, review, and create Nhập tên fcj-ws-1 cho IAM Role Di chuyển đến cuối trang Create Role hoàn tất quá trình tạo Role "
+},
+{
+	"uri": "/vi/1-introduce/1.2-ec2-database/",
+	"title": "Bastion Host, EC2 và Aurora Database",
+	"tags": [],
+	"description": "",
+	"content": "Bastion Host Bastion Host là một máy chủ đặc biệt được thiết kế để bảo vệ các Private Subnet khỏi các cuộc tấn công từ bên ngoài. Được đặt trong một Public Subnet và chỉ cho phép kết nối SSH từ bên ngoài vào các máy chủ trong Private Subnet. Bastion Host thường được sử dụng như một điểm đầu vào an toàn để truy cập các máy chủ trong một trường cloud.\nEC2 (Elastic Compute Cloud) EC2 là một dịch vụ máy chủ ảo trong đám mây của Amazon Web Services (AWS). Nó cho phép triển khai các máy chủ ảo có thể được mở rộng theo nhu. EC2 cung cấp một loạt các loại máy ảo để phù hợp với các yêu cầu công việc khác nhau và là một trong những dịch vụ quan trọng nhất của AWS.\nAurora Database Aurora là một dịch vụ cơ sở dữ liệu quan trọng của AWS, được thiết kế để cung cấp hiệu suất cao, khả năng mở rộng và độ tin cậy. Aurora sử dụng một kiến trúc dựa trên cơ sở dữ liệu quan hệ, nhưng được tối ưu hóa để hoạt động trên nền tảng đám mây. Một trong những tính năng quan trọng của Aurora là khả năng đọc nhân bản (read replicate), cho phép sao chép dữ liệu từ cơ sở dữ liệu chính sang các bản sao đọc, tăng hiệu suất đọc và mở rộng khả năng xử lý và độ khả dụng của Database.\n"
+},
+{
+	"uri": "/vi/2-prerequiste/",
+	"title": "Các bước chuẩn bị",
+	"tags": [],
+	"description": "",
+	"content": "Trong workshop này, chúng ta sẽ xây dựng kiến trúc 3 Tier theo thứ tự từ dưới lên, từ tầng Database, tầng App, đến tầng Web. Theo mô hình sau đây: Các bước chuẩn bị:\nTạo một S3 Bucket và tải mã nguồn từ Github để chuẩn bị cho việc cài đặt ứng dụng. Tạo IAM Role cho EC2 để cấp quyền truy cập. Tạo VPC để phân chia mạng và quản lý tài nguyên. Tạo các nhóm bảo mật (Security Group) để quản lý truy cập bảo mật. Nội dung Tạo S3 Bucket Tạo IAM Role Tạo VPC Tạo Security Group "
+},
+{
+	"uri": "/vi/6-webdeployment/6.2-configurewebinstance/",
+	"title": "Cấu hình Web Instance",
+	"tags": [],
+	"description": "",
+	"content": "Quay lại phiên SSH. Để cài đặt những thành phần cần thiết cho ứng dụng frontend.\nCài đặt NVM (Node Version Manager) curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh | bash\rsource ~/.bashrc\rnvm install 16\rnvm use 16\rDownload gói cài Web Tier đã tải lên ở S3 Bucket cd ~/\raws s3 cp s3://BUCKET_NAME/web-tier/ web-tier --recursive Di chuyển đến thư mục Web-tier và cài đặt react app cho server.\ncd ~/web-tier\rnpm install npm run build Cài đặt NGINX sudo amazon-linux-extras install nginx1 -y\rCấu hình file NGINX cd /etc/nginx\rls Tại đây sẽ xuất hiện file nginx.conf, tiến hành xóa và thay thế bằng file nginx.conf từ S3 Bucket\nsudo rm nginx.conf\rsudo aws s3 cp s3://BUCKET_NAME/nginx.conf . Khởi động NGINX\nsudo service nginx restart Cấp quyền cho máy chủ\nchmod -R 755 /home/ec2-user Kiểm tra servie đã khởi động hoàn toàn chưa\nsudo chkconfig nginx on Copy địa chỉ IP Public của Web Instance, truy cập địa chỉ IP từ trình duyệt Web. "
+},
+{
+	"uri": "/vi/5-internalloadblacingandautoscaling/5.2-targetgroup/",
+	"title": "Tạo Target Group",
+	"tags": [],
+	"description": "",
+	"content": "Target Group chịu trách nhiệm điều hướng lưu lượng truy cập tới các Instance. Được gắn trực tiếp Internal Load Balancer, qua đó giúp Load Balancer phân phối lưu lượng truy cập đến các App Instance\nTruy cập giao diện EC2 Console\nỞ bảng điều hướng bên trái chọn Target Group \u0026gt; Create tarhet group Trong bảng điều khiển Create target group Choose a target type, chọn Instances Target group name, nhập tên AppTier-TG Protocol: Port, chọn HTTP và Port 4000 IP address type, chọn IPv4 VPC, chọn FCJ-WS-1 VPC Health check path, nhập /health Next sang trang tiếp theo và Create target group "
+},
+{
+	"uri": "/vi/7-externalloadblacingandautoscaling/7.2-targetgroup/",
+	"title": "Tạo Target Group",
+	"tags": [],
+	"description": "",
+	"content": "Target Group có nhiệm vụ chịu trách nhiệm điều hướng lưu lượng truy cập tới các Instance . Sẽ được gắn trực tiếp với External Load Balancer, qua đó giúp **Load Balancer **phân phối lưu lượng truy cập đến các App Instance\nTruy cập giao diện EC2 Console\nỞ bảng điều hướng bên trái chọn Target Group \u0026gt; Create tarhet group Trong bảng điều khiển Create target group Choose a target type, chọn Instances Target group name, nhập tên WebTier-TG Protocol: Port, chọn HTTP và Port 80 IP address type, chọn IPv4 VPC, chọn FCJ-WS-1 VPC Health check path, nhập /health Next sang trang tiếp theo và Create target group "
+},
+{
+	"uri": "/vi/4-appdeployment/4.2appinstancedeployment/",
+	"title": "Triển khai App Instance",
+	"tags": [],
+	"description": "",
+	"content": " Tạo máy chủ ảo EC2\nTruy cập giao diện Amazon EC2\nTruy cập EC2 \u0026gt; Instances \u0026gt; Launch an instance\nTrong giao diện Launch an instance Name, nhập tên Web Instance Phần Application and OS Images Quick Start, chọn Amazon Linux Amazon Machine Image (AMI), chọn Amazon Linux 2 AMI Instance type, chọn t2.micro Key pair, Create new key pair nhập tên App-Key và lưu về máy Phần Network settings - VPC, chọn FCJ-WS-1 VPC - Subnet, chọn Private Subnet 1 - Auto-assign public IP, Disable - Firewall (security groups), chọn App-SG Phần Advanced details IAM instance profile, chọn FCJ-WS-Role tạo ở bước 2.2 Review Instance trong Summary và Launch instance Đăng nhập vào EC2\nTương tự 4.2 chỉnh quyền truy cập Key Pair SSH vào Instance Để đăng nhập App Instance nằm trong Private Subnetcần phải thông qua Bastion Host EC2 như sau: ssh -i \u0026#34;App-Key.pem\u0026#34; ec2-user@10.0.154.274 -o ProxyCommand=\u0026#34;ssh -W %h:%p -i \u0026#34;Bastion-Key.pem\u0026#34; ec2-user@ec2-3-25-87-27.ap-southeast-2.compute.amazonaws.com "
+},
+{
+	"uri": "/vi/4-appdeployment/4.3-configuredatabase/",
+	"title": "Cấu hình kết nối Database",
+	"tags": [],
+	"description": "",
+	"content": "Để kết nối tới MySQL Database từ App Tier Instance, cần có MySQL CLI và thiết lập kết nối tới Database.\nTải và cài đặt MySQL CLI sudo yum install mysql -y Khởi tạo kết nối Database bằng Aurora RDS endpoint mysql -h \u0026lt;Aurora_RDS_endpoint\u0026gt; -u \u0026lt;username\u0026gt; -p Thay thế \u0026lt;Aurora_RDS_endpoint\u0026gt; bằng RDS Endpoint và bằng tên người dùng đã tạo ở bước 3.2. Nhập mật khẩu khi được yêu cầu.\nTạo Database, Table, Insert vào Table CREATE DATABASE webappdb; USE webappdb;\rCREATE TABLE IF NOT EXISTS transactions(id INT NOT NULL\rAUTO_INCREMENT, amount DECIMAL(10,2), description\rVARCHAR(100), PRIMARY KEY(id)); SHOW TABLES; INSERT INTO transactions (amount,description) VALUES (\u0026#39;400\u0026#39;,\u0026#39;groceries\u0026#39;);\rINSERT INTO transactions (amount,description) VALUES (\u0026#39;200\u0026#39;,\u0026#39;trees\u0026#39;); SELECT * FROM transactions; Sau đó nhập Exit để thoát MySQL client\n"
+},
+{
+	"uri": "/vi/3-databasedeployment/",
+	"title": "Deploy Database",
+	"tags": [],
+	"description": "",
+	"content": "After configuring the VPC, security groups, and preparing the installation components, the next step is to deploy the Database Tier according to the following model:\nContents Create Subnets Group Create Aurora Database "
+},
+{
+	"uri": "/vi/1-introduce/1.3-lb-asg/",
+	"title": "Load Blancer và Autoscaling Group",
+	"tags": [],
+	"description": "",
+	"content": "Bằng cách sử dụng Load Balancing và Autoscaling Group, có thể tối ưu hóa hiệu suất và khả năng mở rộng của hệ thống.\nLoad Balancing Load Balancing là dịch vụ quan trọng trong Amazon Web Services (AWS) cho phép phân phối tải giữa các máy chủ và tài nguyên khác nhau để cải thiện hiệu suất và đảm bảo sẵn sàng của ứng dụng. Trong đó bài workshop sử dụng hai công nghệ:\nInternal Load Balancing Internal Load Balancing là tính năng giúp phân phối tải trong mạng nội bộ. Sử dụng cho tầng ứng dụng để phân phối tải giữa máy chủ web trong mạng nội bộ mà không tiếp xúc với Internet.\nInterface Load Balancing cho Tầng Web Interface Load Balancing giảo tiếp bằng cách sử dụng giao diện mạng (network interface) của các instance EC2 để phân phối tải. Điều này cho phép chia tải lưu lượng truy cập giữa các instance EC2 trên cùng subnet hoặc giữa các subnet khác nhau.\nTarget Group Target Group là tập hợp các máy chủ hoặc dịch vụ mà Load Balancer sẽ chuyển tiếp các yêu cầu đến. Mỗi target group có thể được cấu hình để chấp nhận lưu lượng từ cổng và giao thức nhất định.\nAMI và Launch Template AMI (Amazon Machine Image) là bản ghi của máy ảo EC2, bao gồm hệ điều hành và các cài đặt ứng dụng. Launch Template là mẫu được sử dụng để cấu hình các thông số của instance EC2 khi nó được khởi chạy.\nAutoscaling Group Autoscaling Group là nhóm các instance EC2 được quản lý bởi AWS Autoscaling, tự động thay đổi số lượng các instance dựa trên các chính sách được định cấu hình như tải CPU, số lượng yêu cầu đến, hoặc các metric khác.\n"
+},
+{
+	"uri": "/vi/3-databasedeployment/3.2-createauoradatabase/",
+	"title": "Tạo Aurora Database",
+	"tags": [],
+	"description": "",
+	"content": "Sau khi đã tạo Subnet Groups, tiến hành tạo Aurora Database dựa trên MySQL Engine và triển khai Read Replicate Database để tăng tính khả dụng cho Database Tier.\nTạo Aurora Database Read Replicate\nTruy cập giao diện Amazon RDS\nTruy cập RDS \u0026gt; Create database\nTrong giao diện Create database\nChọn Standard create Engine options, chọn Aurora (MySQL Compatible) Templates, chọn Dev/Test Phần Settings DB cluster identifier, nhập database-1 Master username, nhập tên database admin Chọn Self managed, nhập Password vào Master password, Confirm master password Phần Instance configuration, chọn d3.t3.medium Phần Availability \u0026amp; durability Chọn Create an Aurora Replica or Reader node in a different AZ (recommended for scaled availability) để deploy read replicate Phần Connectivity Compute resource chọn Don’t connect to an EC2 compute resource Network type chọn IPv4 VPC, chọn FCJ-VPC DB subnet group, chọn database-subnet vừa tạo VPC security group, chọn Database-SG Các phần còn lại để mặc định Di chuyển đến cuối trang và nhấn Create database Kết quả\nKết quả tạo ra 1 Write Database và 1 Read Database Truy cập Write Database, copy và lưu lại Endpoint trong file Note để sử dụng ở các bước sau. "
+},
+{
+	"uri": "/vi/5-internalloadblacingandautoscaling/5.3-internalloadblancer/",
+	"title": "Tạo Internal Load Blancer",
+	"tags": [],
+	"description": "",
+	"content": " Truy cập giao diện EC2 Console\nỞ bảng điều hướng bên trái chọn Load Balancers \u0026gt; Create Load Balancer Trong bảng điều khiển Compare and select load balancer type\nChọn và Create, Application Load Balancer Trong bảng điều khiển Create Application Load Balancer\nLoad balancer name, nhập tên Internal-Load-Blancer\nSchema, chọn Internal\nProtocol: Port, chọn HTTP và Port 80\nIP address type, chọn IPv4 VPC, chọn FCJ-WS-1 VPC\nMappings, Chọn Private Subnet 1 và 2 tương ứng ở 2 AZ\nSecurity groups, chọn Internet-Facing-LB-SG Protocol: Port, chọn HTTP và Port 80\nForward to tới AppTier-TG\nDi chuyển đến cuối trang và chọn Create load balancer "
+},
+{
+	"uri": "/vi/7-externalloadblacingandautoscaling/7.3-internetfacingloadbalancer/",
+	"title": "Tạo Internet Facing Load Balancer",
+	"tags": [],
+	"description": "",
+	"content": " Truy cập giao diện EC2 Console\nỞ bảng điều hướng bên trái chọn Load Balancers \u0026gt; Create Load Balancer Trong bảng điều khiển Compare and select load balancer type Chọn và Create, Application Load Balancer Trong bảng điều khiển Create Application Load Balancer Load balancer name, nhập tên Internet-Facing-Load-Balancer Schema, chọn Internal-facing Protocol: Port, chọn HTTP và Port 80 IP address type, chọn IPv4 VPC, chọn FCJ-WS-1 VPC Mappings, Chọn Private Subnet 1 và 2 tương ứng ở 2 AZ Security groups, chọn Internet-Facing-LB-SG Protocol: Port, chọn HTTP và Port 80 Forward to tới AppTier-TG Di chuyển đến cuối trang và chọn Create load balancer "
+},
+{
+	"uri": "/vi/5-internalloadblacingandautoscaling/5.4-launchtemlate/",
+	"title": "Tạo Template",
+	"tags": [],
+	"description": "",
+	"content": "Tạo Template Trước khi thực hiện Autoscaling, chúng ta cần Template với AMI vừa tạo ở 5.1\nTruy cập giao diện EC2 Console\nỞ bảng điều hướng bên trái chọn Tạo Template \u0026gt; Create Launch Template Launch template name, nhập tên WebTierTemplate Template version description, nhập mô tả Template for auto scaling web tier Phần Application and OS Images, chọn My AMIs, chọn Owned by me Amazon Machine Image (AMI), chọn WebTierImage Instance type, chọn t2.micro Key pair, chọn App-Key Phần Network settings, Security groups chọn Web-SG Phần Advanced details, IAM instance profile chọn FCJ-WS-role Di chuyển đến cuối trang Create launch template "
+},
+{
+	"uri": "/vi/2-prerequiste/2.3-createvpc/",
+	"title": "Tạo VPC",
+	"tags": [],
+	"description": "",
+	"content": "Như đã giới thiệu, chúng ta sẽ tạo VPC với 2 AZs, bao gồm 4 Private Subnet cho Database và App Tier và 2 Public Subnet cho Web Tier. Internet Gateway sẽ kết nối với Internet và NAT Gateway sẽ kết nối với Private Subnet.\nTruy cập giao diện VPC\nTruy cập VPC \u0026gt; Your VPCs \u0026gt; Create VPC\nTrong giao diện Create VPC\nChọn VPC and more* để có sự hỗ trợ tự động trong việc tạo VPC. Name tag auto-generation, nhập tên FCJ-WS-1 Number of Availability Zones (AZs), chọn 2 AZ Number of public subnets, chọn 2 Number of private subnets, chọn 4 NAT gateways, in 1 AZ VPC endpints, S3 Gateway Di chuyển đến cuối trang chọn Create VPC "
+},
+{
+	"uri": "/vi/4-appdeployment/4.4-configureappinstance/",
+	"title": "Cấu hình App Instance",
+	"tags": [],
+	"description": "",
+	"content": "Cập nhật thông tin xác thực tới Database trong file DbConfig.js nằm ở thư mục application-code/app-tier/ mà đã tải về từ Github. Trong tệp này, hãy điền hostname, user, password và database.\nĐể tiếp tục, quay lại phiên SSH. Bắt đầu cài đặt những thành phần cần thiết cho ứng dụng backend.\nCài đặt NVM (Node Version Manager) curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh | bash\rsource ~/.bashrc Cài đặt Node.js nvm install 16\rnvm use 16 Cài đặt PM2 để giữ Node.js luôn hoạt động npm install -g pm2 Tải Bucket App-tier từ S3 về EC2 cd ~/\raws s3 cp s3://BUCKET_NAME/app-tier/ app-tier --recursive Di chuyển tới thư mục vừa tải, cài đặt và khởi động PM2 cd ~/app-tier\rnpm install\rpm2 start server.js Kiểm tra trạng thái hoạt động của máy chủ\npm2 list Khởi động máy chủ PM2\npm2 startup Sau khi khởi động, bạn sẽ nhận được một dòng lệnh tương tự như sau. Hãy sao chép và chạy nó trên máy của bạn:\n[PM2] To setup the Startup Script, copy/paste the following command: sudo env PATH=$PATH:/home/ec2-user/.nvm/versions/node/v16.0.0/bin /home/ec2-user/.nvm/versions/node/v16.0.0/lib/node_modules/pm2/bin/pm2 startup systemd -u ec2-user —hp /home/ec2-user Lưu lại cấu hình của PM2\nPm2 save Điều này hoàn tất quá trình cấu hình cho ứng dụng instance của bạn.\nKiểm thử App Instance Bây giờ hãy chạy một vài bài kiểm tra để xem ứng dụng đã được cấu hình đúng và có thể truy xuất dữ liệu từ Database.\nKiểm tra tình trạng\ncurl http://localhost:4000/health Kiểm tra kết nối của Database\ncurl http://localhost:4000/transaction "
+},
+{
+	"uri": "/vi/2-prerequiste/2.4-cretaesecuritygroup/",
+	"title": "Tạo Security Group",
+	"tags": [],
+	"description": "",
+	"content": "Tương tự như một thành phần Firewall trong mạng LAN, Security Group quản lý quyền truy cập vào các thành phần trong một Virtual Private Cloud (VPC).\nTruy cập vào VPC \u0026gt; Security Groups \u0026gt; Create security group để tạo 1 SG\nInternet Facing Load Blancer Security Group\nĐối với Internet Facing Load Blancer, Security Group sẽ cho phép truy cập HTTP vào cổng 80 từ Internet vào Load Blancer của Web Tier.\nSecurity Group name, nhập tên Internet-Facing-LB-SG Description, nhập miêu tả VPC, chọn FCJ-WS-1 VPC. Thêm Inbound rules cho phép My IP truy cập HTTP vào từ cổng 80 Bastion Host Security Group\nBastion Host cho phép SSH từ Local\nSecurity Group name, nhập tên Bastion-SG Description, nhập miêu tả VPC, chọn FCJ-WS-1 VPC mà chúng ta đã tạo trước đó. Thêm Inbound rules cho phép My IP truy cập SSH vào từ cổng 22 Web Security Group\nĐối với các Public Instance trong tầng web, chúng ta cần tạo một Security Group cho phép lưu lượng từ cân bằng tải, SSH từ máy tính cục bộ để có thể cấu hình EC2, và một cổng HTTP từ địa chỉ IP của máy tính cục bộ để thử nghiệm hoạt động từ trang web.\nSecurity Group name, nhập tên Web-SG Description, nhập miêu tả VPC, chọn FCJ-WS-1 VPC mà chúng ta đã tạo trước đó. Thêm các Inbound rules Cho phép My IP truy cập SSH vào từ cổng 22. Cho phép HTTP từ My IP vào cổng 80. Cho phép HTTP từ Security Group \u0026ldquo;Internet-Facing-LB-SG\u0026rdquo; truy cập vào từ cổng 22. Internal Facing Load Balancer Security Group\nNhóm bảo mật này được sử dụng để quản lý lưu lượng HTTP từ Web Security Group vào cổng 80. Điều này cho phép lưu lượng từ các instance trong Web Tier truy cập vào cân bằng tải nội bộ.\nSecurity Group name, nhập tên Internal-LB-SG Description, nhập miêu tả VPC, chọn FCJ-WS-1 Thêm Inbound rules cho phép Web-SG truy cập HTTP vào từ cổng 80 App Security Group\nNhóm bảo mật này được sử dụng để quản lý lưu lượng HTTP từ Internal-LB-SG vào cổng 80, Bastion-SG SSH vào từ cổng 22.\nSecurity Group name, nhập tên App-SG Description, nhập miêu tả VPC, chọn FCJ-WS-1 Thêm các Inbound rules 1. Cho phép Bastion-SG truy cập SSH vào từ cổng 22 2. Cho phép Internal-LB-SG TCP vào từ cổng 4000 Database Security Group\nNhóm bảo mật này cho phép EC2 trong App Tier truy cập vào MySQL Database qua cổng 3306.\nSecurity Group name, nhập tên Database-SG Description, nhập miêu tả VPC, chọn FCJ-WS-1 VPC Thêm Inbound rules cho phép App-SG truy cập vào từ cổng 3306 "
+},
+{
+	"uri": "/vi/7-externalloadblacingandautoscaling/7.4-launchtemlate/",
+	"title": "Tạo Template",
+	"tags": [],
+	"description": "",
+	"content": "Trước khi thực hiện Autoscaling, chúng ta cần Template với AMI vừa tạo ở 7.1\nTruy cập giao diện EC2 Console\nỞ bảng điều hướng bên trái chọn Tạo Template \u0026gt; Create Launch Template Launch template name, nhập tên WebTierTemplate Template version description, nhập mô tả Template for auto scaling web tier Phần Application and OS Images, chọn My AMIs, chọn Owned by me Amazon Machine Image (AMI), chọn WebTierImage Instance type, chọn t2.micro Key pair, chọn Web-Key Phần Network settings, Security groups chọn Web-SG Phần Advanced details, IAM instance profile chọn FCJ-WS-role Di chuyển đến cuối trang Create launch template "
+},
+{
+	"uri": "/vi/4-appdeployment/",
+	"title": "Triển khai App Tier",
+	"tags": [],
+	"description": "",
+	"content": "Tạo và cấu hình máy chủ EC2 cho App Tier các phần mềm cần thiết,ứng dụng Node.js trên cổng 4000. Tiếp tục thiết lập kết nối đến Database đã tạo ở bước 3. Trong đó để SSH đến EC2 App Tier, nằm trong Private Subnet, phải dùng EC2 Bastion Host đặt trong Public Subnet như một điểm trung cgian. Theo mô hình bên dưới:\nNội dung Tạo Bastion Host Triển khai App Instance Cấu hình kết nối Database Cấu hình App Instance "
+},
+{
+	"uri": "/vi/5-internalloadblacingandautoscaling/5.5-autoscaling/",
+	"title": "Tạo Autoscaling Group",
+	"tags": [],
+	"description": "",
+	"content": "Phần cuối của part 5, chúng ta sẽ tạo Auto Scaling Group cho App Tier dựa trên Target Group vừa tạo\nTruy cập giao diện EC2 Console\nỞ bảng điều hướng bên trái chọn Auto Scaling Groups \u0026gt; Create Auto Scaling group Launch template name, nhập tên AppTierTemplate Step 1: Choose launch template Nhập tên, AppTier-ASG Launch template, chọn AppTierTemplate Next Step 2: Choose instance launch options VPC, chọn FCJ-WS-1 VPC Subnet, chọn Private 1 và 2 Next Step 3: Configure advanced options Load balancing, chọn Attach to an existing load balancer Existing load balancer target groups, chọn AppTier-TG | HTTP Next Step 4:Configure group size and scaling -Desired capacity, nhập 2 -Min desired capacity, nhập 2 -Max desired capacity, nhập 4 Next Step 5 : Add notifications Chọn Create topic Send a notification to, With these recipients, nhập email của bạn Next Step 7: Review Create Auto Scaling group "
+},
+{
+	"uri": "/vi/7-externalloadblacingandautoscaling/7.5-autoscaling/",
+	"title": "Tạo Template",
+	"tags": [],
+	"description": "",
+	"content": "Phần cuối của part 7, chúng ta sẽ tạo Auto Scaling Group cho App Tier dựa trên Target Group vừa tạo\nTruy cập giao diện EC2 Console\nỞ bảng điều hướng bên trái chọn Auto Scaling Groups \u0026gt; Create Auto Scaling group Launch template name, nhập tên WebTierTemplate Step 1: Choose launch template Nhập tên, WebTier-ASG Launch template, chọn WebTierTemplate Next Step 2: Choose instance launch options VPC, chọn FCJ-WS-1 VPC Subnet, chọn Public 1 và 2 Next Step 3: Configure advanced options Load balancing, chọn Attach to an existing load balancer Existing load balancer target groups, chọn WebTier-TG | HTTP Next Step 4:Configure group size and scaling -Desired capacity, nhập 2 -Min desired capacity, nhập 2 -Max desired capacity, nhập 4 Next Step 5 : Add notifications Chọn FCJ-WS-1 topic Next Step 7: Review Create Auto Scaling group "
+},
+{
+	"uri": "/vi/5-internalloadblacingandautoscaling/",
+	"title": "Triển khai Internal Load Balancing và Auto Scaling",
+	"tags": [],
+	"description": "",
+	"content": "Trong phần này của workshop, chúng ta sẽ tạo một Amazon Machine Image (AMI) của App Instance vừa tạo và sử dụng nó để triển khai Auto Scaling và Load Blacing để tăng tính khả dụng cho App Tier.\nNội dung Tạo App Tier AMI Tạo Target Group Tạo Internal Load Blancer Tạo Template Tạo Autoscling Group "
+},
+{
+	"uri": "/vi/6-webdeployment/",
+	"title": "Triển khai Web Tier ",
+	"tags": [],
+	"description": "",
+	"content": "Trong tầng cuối cùng của Workshop, chúng ta sẽ triển khai máy chủ EC2 cho Web Tier và các phần mềm cần thiết cho máy chủ NGINX và trang web React.js.\nNội dung Triển khai App Instance Cấu hình Web Instance "
+},
+{
+	"uri": "/vi/7-externalloadblacingandautoscaling/",
+	"title": "Triển khai External Load Balancing và Auto Scaling",
+	"tags": [],
+	"description": "",
+	"content": "Trong phần này của workshop, chúng ta sẽ tạo một Amazon Machine Image (AMI) của Web Instance vừa tạo và sử dụng nó để triển khai Auto Scaling và Load Blacing để tăng tính khả dụng cho Web Tier.\nNội dung Tạo VPC Tạo Subnet Tạo Internet Gateway Tạo Route Table Tạo Security Group "
+},
+{
+	"uri": "/vi/8-test/",
+	"title": "Kiểm tra khả năng hoạt động",
+	"tags": [],
+	"description": "",
+	"content": " Khả năng Auto Scaling WebTier-ASG Launching thành công 2 EC2 tại Web Tier AppTier-ASG Laucnhing thành công 2 EC2 tại App Instance Thử Terminate một Instance, email thông báo đã tự động Launching một Instance khác thay thế Khả năng hoạt động Website Copy Internet facing load blacing DNS và truy cập trang Web Kiểm tra tính năng Database, nhập và xóa dữ liệu "
+},
+{
+	"uri": "/vi/9-cleanup/",
+	"title": "Dọn dẹp tài nguyên",
+	"tags": [],
+	"description": "",
+	"content": " Để tránh lãng phí tài nguyên và bị tính các chi phí phát sinh chúng ta sẽ kiểm tra và xóa các resource lần lượt theo các bước triển khai từ 1-7 Xóa Database Delete Read Node Tương tự Delete Write Node Xóa cụm Database, chọn không lưu lại Snapshop để tránh bị charge tiền. Xóa các công cụ Load Blancer và Auto Scale Xóa AutoScaling Group Xóa Load Blancer Xóa Target Group Xóa Template Xóa AMI Xóa EC2 Instance và Snapshots Terminate các EC2 Kiểm tra và xóa Snapshots Xóa các thành phần trong VPC Xóa NAT Gateway Realase Elastic IP "
+},
+{
+	"uri": "/vi/categories/",
+	"title": "Categories",
+	"tags": [],
+	"description": "",
+	"content": ""
+},
+{
+	"uri": "/vi/tags/",
+	"title": "Tags",
+	"tags": [],
+	"description": "",
+	"content": ""
+}]

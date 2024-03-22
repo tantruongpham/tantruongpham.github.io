@@ -1,0 +1,260 @@
+[
+{
+	"uri": "/",
+	"title": "Building a 3-tier Web Application Architecture with AWS",
+	"tags": [],
+	"description": "",
+	"content": "Building a 3-tier Web Application Architecture with AWS Overview In this workshop, we will deploy a 3-tier web application on the AWS cloud platform. Based on the Virtual Private Cloud (VPC) virtual network architecture and secure security components such as Security Groups, IAM, and Bastion Host. Then deploy the Database, Backend, and Frontend tiers using Aurora Database and EC2 virtual servers. Combining performance optimization and increasing the availability of the web application through the use of tools such as Load Balancer, Autoscaling, and Target Group.\nContents Introduction Prerequisite Steps Database Deployment App Deployment Configuring Internal Load Balancing and Auto Scaling Web Deployment Configuring External Load Balancing and AutoScaling Testing Operational Capability Resource Cleanup "
+},
+{
+	"uri": "/5-internalloadblacingandautoscaling/5.1-appterami/",
+	"title": "Create App Tier AMI",
+	"tags": [],
+	"description": "",
+	"content": " Access EC2 Console\nIn the left navigation pane, choose EC2 Select App Instance From the Actions tab, choose Image and Templates \u0026gt; Image In the Create image tab that appears Image name, enter the name AppTierImage Image description, enter the description Scroll down to the bottom of the page and click Create image "
+},
+{
+	"uri": "/4-appdeployment/4.1-bastionhost/",
+	"title": "Create Bastion Host",
+	"tags": [],
+	"description": "",
+	"content": "As introduced, a Bastion Host acts as an intermediary access point to protect Private Instances.\nCreate an EC2 Virtual Server\nAccess the Amazon EC2 interface.\nNavigate to EC2 \u0026gt; Instances \u0026gt; Launch an instance.\nIn the Launch an instance interface: Name: Enter the name Bastion Host. Under Application and OS Images: Quick Start: Choose Amazon Linux. Amazon Machine Image (AMI): Select Amazon Linux 2 AMI. Instance type: Choose t2.micro. Key pair: Create a new key pair named Bastion-Key and save it to your machine. Under Network settings: VPC: Choose the FCJ-WS-1 VPC. Subnet: Select Public Subnet 1. Auto-assign public IP: Enable. Firewall (security groups): Choose Bastion-SG. Under Advanced details: IAM instance profile: Choose the FCJ-WS-Role created in step 2.2. Review the instance in the Summary and Launch instance. Login to the EC2 Instance\n2.1 Edit Key Pair Access Permissions\nRight-click on the downloaded key pair file, and select Properties. In the displayed window, go to the Security tab \u0026gt; Advanced. In the Advanced Security Settings window, select Disable inheritance \u0026gt; Remove all inherited permissions from this object \u0026gt; Add. In the Permission Entry window, click Select a principal. In the Select User or Group window, enter admin in the Enter the object field \u0026gt; click Check Names \u0026gt; OK. Back in the Permission Entry window, select Full control, then click OK. 2.2 SSH into the Instance via CMD\nSelect the newly created Instance in the EC2 console, then click Connect. Choose the SSH Client tab, copy and save the SSH command. Open CMD at the location of the key pair file, paste the copied SSH command to log in to the EC2 instance.\nSuccessfully logged into the EC2 instance. "
+},
+{
+	"uri": "/2-prerequiste/2.1-creates3bucket/",
+	"title": "Create S3 Bucket",
+	"tags": [],
+	"description": "",
+	"content": "An S3 Bucket is where installation files will be stored and downloaded from EC2 instances. Download the source code from the following GitHub address and upload it to the S3 Bucket.\nCreate an S3 Bucket\nIn the AWS Management Console Go to Amazon S3 \u0026gt; Buckets \u0026gt; Create bucket In the Create bucket dialog box: AWS Region, enter Asia Pacific (Sydney) ap-southeast-2 Bucket name, enter fcj-ws-1 Scroll to the bottom of the page and click Create bucket Download code from GitHub\nDownload the source code from GitHub to your local environment. If you haven\u0026rsquo;t installed git, you can download the zip file and unzip it. git clone https://github.com/aws-samples aws-three-tier-web-architecture-workshop.git Upload code from local to S3 Bucket\nNavigate to Amazon S3 \u0026gt; Buckets \u0026gt; fcj-ws-1 \u0026gt; Upload Select Add folder In the pop-up window, choose the path to the application code folder and upload it. "
+},
+{
+	"uri": "/3-databasedeployment/3.1-subnetsgroup/",
+	"title": "Create Subnets Group",
+	"tags": [],
+	"description": "",
+	"content": "Subnets Group manages routing for database instances, contributing to the availability of the Database.\nAccess the Amazon RDS interface: Navigate to RDS \u0026gt; Subnet groups \u0026gt; Create DB subnet group.\nIn the Create DB subnet group interface: Name: Enter the name Database Subnet. Description: Provide a description for the subnet group. VPC: Choose the FCJ-WS-1 VPC. Availability Zones: Select ap-southeast-2a and ap-southeast-2b, corresponding to the 2 AZs in the VPC. Subnets: Choose Private Subnet 3 and Private Subnet 4 in the Database Tier. Scroll down and click Create. "
+},
+{
+	"uri": "/7-externalloadblacingandautoscaling/7.1-appterami/",
+	"title": "Create Web Tier AMI",
+	"tags": [],
+	"description": "",
+	"content": " Access the EC2 Console Interface\nIn the left-hand navigation pane, select EC2. Choose the Web Instance that was just created. From the Actions tab, select Image and Templates \u0026gt; Image. In the Create image tab that appears: For Image name, enter WebTierImage. For Image description, provide a description. Scroll to the bottom of the page and click Create image. "
+},
+{
+	"uri": "/6-webdeployment/6.1-webinstancedeployment/",
+	"title": "Deploy App Instance",
+	"tags": [],
+	"description": "",
+	"content": " Update Configuration File\nUpdate the configuration file by opening the application-code/nginx.conf file. At line 58, replace [INTERNAL-LOADBALANCER-DNS] with the Internal Load Balancing DNS address.\nCreate EC2 Virtual Server\nAccess the Amazon EC2 interface.\nGo to EC2 \u0026gt; Instances \u0026gt; Launch an instance\nIn the Launch an instance interface Name, enter the name App Instance Under Application and OS Images Quick Start, select Amazon Linux Amazon Machine Image (AMI), select Amazon Linux 2 AMI Instance type, select t2.micro Key pair, select Create new key pair, enter the name Web-Key and save it to your machine Under Network settings VPC, select FCJ-WS-1 VPC Subnet, select Public Subnet 1 Auto-assign public IP, Enable Firewall (security groups), select Web-SG Under Advanced details IAM instance profile, select FCJ-WS-Role created in step 2.2 Review the instance in the Summary section and click Launch instance ![Web Instance](/images/4/4.2/42-04.png?featherlight=false\u0026amp;width=70pc\n"
+},
+{
+	"uri": "/1-introduce/",
+	"title": "Introduction",
+	"tags": [],
+	"description": "",
+	"content": "3-Tier Web Application When deploying a web application on a cloud platform, it\u0026rsquo;s not just about having a good content and technology in the application but also considering the architecture and deployment environment. Key factors influencing architectural decisions include:\nScalability\nWhat is the scalability or shrinkability of the application? How much time is needed to manage the application? Availability\nApplication availability. Ability to operate stably over long periods. Ability to automatically recover from failures. Security\nOverall and individual security of the application effectively. Level of damage in the event of an attack. A 3-Tier Web Application provides scalability, availability, and security by dividing the application into different Availability Zones (AZs) and dividing it into 3 tiers serving different functions that are completely independent. When one AZ experiences a failure, the application has the ability to automatically scale resources to another AZ without affecting other application tiers. Each tier has its own security group allowing only necessary inbound/outbound traffic to perform specific tasks.\nWeb/Presentation Tier: Contains the elements that users see in the application, such as web servers and interfaces/user interfaces. Application Tier: Contains server software and application source code needed to process data and execute functions. Data Tier: Contains and manages application data, usually where the database is stored. In the subsections of the introduction, we will explore the technologies applied in the process of deploying the 3-Tier Web Application.\nContents VPC EC2-Bastion Host-Database Load Balancing-Autoscaling Group "
+},
+{
+	"uri": "/1-introduce/1.1-vpc/",
+	"title": "Virtual Private Cloud (VPC)",
+	"tags": [],
+	"description": "",
+	"content": "Virtual Private Cloud (VPC) Introduction to Virtual Private Cloud (VPC) Architecture for 3-Tier Web Application In AWS, Virtual Private Cloud (VPC) is an important service, creating a private cloud environment to deploy computing resources. The 3-tier Web application is deployed across 2 different Availability Zones (AZs) to increase availability and resilience. With a total of 6 Subnets, including 2 public subnets for the Web tier and 4 private subnets for the Application and Database tiers, this division helps to separate and efficiently manage the application.\nComponents of VPC Subnets: Subnets in VPC are small portions of a network that are divided to manage and distribute resources of the application. In the 3-tier Web architecture, we have a total of 6 Subnets, divided into 3 tiers:\nWeb Tier: Consists of 2 public subnets, serving for the deployment of web servers and user interfaces. Application Tier: Includes 2 private subnets, used for the backend. Data Tier: Comprises 2 private subnets, used for the database. Route Tables: Determine how data is forwarded between subnets within the VPC and to the Internet. Important for managing the flow of information between different components of the Web application.\nInternet Gateway: Allows resources in the VPC to access the Internet. Important for the Web tier, where web servers communicate with users.\nNAT Gateway: Allows resources in the Application tier to access the Internet without directly exposing them, ensuring security.\nSecurity Groups: Manage network traffic to and from resources within the VPC, allowing the definition of access rules.\n"
+},
+{
+	"uri": "/1-introduce/1.2-ec2-database/",
+	"title": "Bastion Host, EC2, and Aurora Database",
+	"tags": [],
+	"description": "",
+	"content": "Bastion Host A Bastion Host is a special server designed to protect Private Subnets from external attacks. It is placed in a Public Subnet and only allows SSH connections from outside to servers within the Private Subnet. Bastion Hosts are commonly used as a secure entry point to access servers in a cloud environment.\nEC2 (Elastic Compute Cloud) EC2 is a virtual server service in the Amazon Web Services (AWS) cloud. It allows the deployment of virtual servers that can be scaled as needed. EC2 provides a variety of virtual machine types to fit various workload requirements and is one of the most important AWS services.\nAurora Database Aurora is an important database service of AWS, designed to provide high performance, scalability, and reliability. Aurora uses a relational database-based architecture but is optimized to operate on the cloud platform. One of the important features of Aurora is read replication, allowing data to be copied from the primary database to read replicas, enhancing read performance and scaling processing capability and availability of the Database.\n"
+},
+{
+	"uri": "/2-prerequiste/2.2-createiamrole/",
+	"title": "Create IAM Role for EC2 Instances",
+	"tags": [],
+	"description": "",
+	"content": "Create an IAM Role to assign to instances, thereby providing access to AWS services.\nCreate an IAM role\nAccess the IAM service on the AWS Management Console Go to IAM \u0026gt; Roles \u0026gt; Create role Step 1: Select trusted entity\nChoose AWS service Service or use case, enter EC2 Step 2: Add permissions\nEnter and select AmazonSSMManagedInstanceCore, AmazonS3ReadOnlyAccess to provide corresponding access permissions. Step 3: Name, review, and create\nEnter the name fcj-ws-1 for the IAM Role Scroll to the bottom of the page and select Create Role to complete the role creation process. "
+},
+{
+	"uri": "/5-internalloadblacingandautoscaling/5.2-targetgroup/",
+	"title": "Create Target Group",
+	"tags": [],
+	"description": "",
+	"content": "The Target Group is responsible for routing traffic to instances. It is directly attached to the Internal Load Balancer, thereby helping the Load Balancer distribute traffic to the App Instances.\nAccess EC2 Console\nIn the left navigation pane, choose Target Group \u0026gt; Create target group In the Create target group dashboard Choose a target type, select Instances Target group name, enter the name AppTier-TG Protocol: Port, select HTTP and Port 4000 - **IP address type**, select **IPv4**\r- **VPC**, select **FCJ-WS-1 VPC**\r- **Health check path**, enter **/health**\r- Click **Next** to proceed and then **Create target group**\r"
+},
+{
+	"uri": "/7-externalloadblacingandautoscaling/7.2-targetgroup/",
+	"title": "Create Target Group",
+	"tags": [],
+	"description": "",
+	"content": "The Target Group is responsible for routing traffic to instances. It will be directly attached to the External Load Balancer, thereby assisting the Load Balancer in distributing traffic to the App Instances.\nAccess the EC2 Console Interface\nIn the left-hand navigation pane, select Target Group \u0026gt; Create target group. In the Create target group control panel: Choose a target type, select Instances. For Target group name, enter WebTier-TG. For Protocol: Port, choose HTTP and Port 80. For IP address type, select IPv4. For VPC, choose FCJ-WS-1 VPC. For Health check path, enter /health. Click Next to proceed to the next page and then click Create target group. "
+},
+{
+	"uri": "/4-appdeployment/4.2appinstancedeployment/",
+	"title": "Deploy App Instance",
+	"tags": [],
+	"description": "",
+	"content": " Create an EC2 Virtual Server\nAccess the Amazon EC2 interface.\nNavigate to EC2 \u0026gt; Instances \u0026gt; Launch an instance.\nIn the Launch an instance interface: Name: Enter the name Web Instance. Under Application and OS Images: Quick Start: Choose Amazon Linux. Amazon Machine Image (AMI): Select Amazon Linux 2 AMI. Instance type: Choose t2.micro. Key pair: Create a new key pair named App-Key and save it to your machine. Under Network settings: VPC: Choose the FCJ-WS-1 VPC. Subnet: Select Private Subnet 1. Auto-assign public IP: Disable. Firewall (security groups): Choose App-SG. Under Advanced details: IAM instance profile: Choose the FCJ-WS-Role created in step 2.2. Review the instance in the Summary and Launch instance. Login to the EC2 Instance\nSimilar to 4.2, edit Key Pair access permissions SSH into the Instance To log in to the App Instance located in the Private Subnet via the Bastion Host EC2, use the following command: ssh -i \u0026#34;App-Key.pem\u0026#34; ec2-user@10.0.154.274 -o ProxyCommand=\u0026#34;ssh -W %h:%p -i \u0026#34;Bastion-Key.pem\u0026#34; ec2-user@ec2-3-25-87-27.ap-southeast-2.compute.amazonaws.com "
+},
+{
+	"uri": "/2-prerequiste/",
+	"title": "Preparation Steps",
+	"tags": [],
+	"description": "",
+	"content": "In this workshop, we will build a 3-tier architecture in the following order, from bottom to top, from the Database tier, to the App tier, to the Web tier. According to the following model: Preparation Steps:\nCreate an S3 Bucket and download the source code from Github to prepare for application installation. Create an IAM Role for EC2 to grant access permissions. Create a VPC to partition the network and manage resources. Create Security Groups to manage security access. Content Create S3 Bucket Create IAM Role Create VPC Create Security Group "
+},
+{
+	"uri": "/6-webdeployment/6.2-configurewebinstance/",
+	"title": "Web Instance Configuration",
+	"tags": [],
+	"description": "",
+	"content": "Return to the SSH session. Install necessary components for the frontend application.\nInstall NVM (Node Version Manager) curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh | bash\rsource ~/.bashrc\rnvm install 16\rnvm use 16 Download the Web Tier installation package uploaded to the S3 Bucket cd ~/\raws s3 cp s3://BUCKET_NAME/web-tier/ web-tier --recursive Move to the Web-tier directory and install the React app for the server.\ncd ~/web-tier\rnpm install\rnpm run build Install NGINX sudo amazon-linux-extras install nginx1 -y Configure NGINX file cd /etc/nginx\rls Here, the nginx.conf file will appear. Proceed to delete and replace it with the nginx.conf file from the S3 Bucket.\nsudo rm nginx.conf\rsudo aws s3 cp s3://BUCKET_NAME/nginx.conf . Start NGINX\nsudo service nginx restart Grant permissions to the server\nchmod -R 755 /home/ec2-user Check if the service has started completely\nsudo chkconfig nginx on Copy the Public IP address of the Web Instance, and access the IP address from a web browser. "
+},
+{
+	"uri": "/4-appdeployment/4.3-configuredatabase/",
+	"title": "Configure Database Connection",
+	"tags": [],
+	"description": "",
+	"content": "To connect to the MySQL Database from the App Tier Instance, you need to have MySQL CLI and establish a connection to the Database.\nDownload and Install MySQL CLI sudo yum install mysql -y Initialize Database Connection using Aurora RDS endpoint mysql -h \u0026lt;Aurora_RDS_endpoint\u0026gt; -u \u0026lt;username\u0026gt; -p Replace \u0026lt;Aurora_RDS_endpoint\u0026gt; with the RDS Endpoint and with the username created in step 3.2. Enter the password when prompted.9\nCreate Database, Table, and Insert Data into Table CREATE DATABASE webappdb; USE webappdb; CREATE TABLE IF NOT EXISTS transactions(id INT NOT NULL AUTO_INCREMENT, amount DECIMAL(10,2), description VARCHAR(100), PRIMARY KEY(id)); SHOW TABLES; INSERT INTO transactions (amount,description) VALUES (\u0026#39;400\u0026#39;,\u0026#39;groceries\u0026#39;); INSERT INTO transactions (amount,description) VALUES (\u0026#39;200\u0026#39;,\u0026#39;trees\u0026#39;); SELECT * FROM transactions; After executing the commands, enter Exit to exit the MySQL client.\n"
+},
+{
+	"uri": "/3-databasedeployment/3.2-createauoradatabase/",
+	"title": "Create Aurora Database",
+	"tags": [],
+	"description": "",
+	"content": "After creating Subnet Groups, proceed to create an Aurora Database based on the MySQL Engine and deploy a Read Replicate Database to increase availability for the Database Tier.\nCreate Aurora Database Read Replicate\nAccess the Amazon RDS interface:\nNavigate to RDS \u0026gt; Create database.\nIn the Create database interface:\nChoose Standard create. Under Engine options, select Aurora (MySQL Compatible). Select Dev/Test under Templates. In the Settings section: DB cluster identifier: Enter database-1. Master username: Enter the database name as admin. Choose Self managed, then enter the password into Master password and Confirm master password. Under Instance configuration, choose d3.t3.medium. Under Availability \u0026amp; durability: Select Create an Aurora Replica or Reader node in a different AZ (recommended for scaled availability) to deploy read replicate. Under Connectivity: Compute resource: Choose Don’t connect to an EC2 compute resource. Choose IPv4 for Network type. VPC: Choose FCJ-VPC. DB subnet group: Select the database-subnet created earlier. VPC security group: Select Database-SG. Leave the remaining sections as default. Scroll down and click Create database. Result\nThe result is one Write Database and one Read Database created. Access the Write Database, copy and save the Endpoint in a Note file for use in subsequent steps. "
+},
+{
+	"uri": "/5-internalloadblacingandautoscaling/5.3-internalloadblancer/",
+	"title": "Create Internal Load Balancer",
+	"tags": [],
+	"description": "",
+	"content": " Access EC2 Console\nIn the left navigation pane, choose Load Balancers \u0026gt; Create Load Balancer In the Compare and select load balancer type dashboard Select and Create an Application Load Balancer In the Create Application Load Balancer dashboard Load balancer name, enter the name Internal-Load-Balancer Scheme, select Internal Protocol: Port, select HTTP and Port 80 IP address type, select IPv4 - **VPC**, select **FCJ-WS-1 VPC**\r- **Mappings**, Select Private Subnet 1 and 2 corresponding to 2 AZs\r- **Security groups**, select **Internet-Facing-LB-SG**\r- **Protocol: Port**, select HTTP and Port 80 - **Forward to** **AppTier-TG**\r- Scroll down to the bottom of the page and click **Create load balancer**\r"
+},
+{
+	"uri": "/7-externalloadblacingandautoscaling/7.3-internetfacingloadbalancer/",
+	"title": "Create Internet Facing Load Balancer",
+	"tags": [],
+	"description": "",
+	"content": " Access the EC2 Console Interface\nIn the left-hand navigation pane, select Load Balancers \u0026gt; Create Load Balancer. In the Compare and select load balancer type control panel, select Create for Application Load Balancer. In the Create Application Load Balancer control panel: For Load balancer name, enter Internet-Facing-Load-Balancer. For Scheme, choose Internet-facing. For Protocol: Port, select HTTP and Port 80. For IP address type, choose IPv4. For VPC, choose FCJ-WS-1 VPC. For Subnets, select Private Subnet 1 and 2 corresponding to the two Availability Zones. For Security groups, choose Internet-Facing-LB-SG. For Protocol: Port, select HTTP and Port 80. For Forward to, choose AppTier-TG. Scroll to the bottom of the page and click Create load balancer. "
+},
+{
+	"uri": "/5-internalloadblacingandautoscaling/5.4-launchtemlate/",
+	"title": "Create Template",
+	"tags": [],
+	"description": "",
+	"content": "Create Template Before implementing Autoscaling, we need a Template with the AMI created in 5.1.\nAccess EC2 Console\nIn the left navigation pane, choose Create Template \u0026gt; Create Launch Template Launch template name, enter the name WebTierTemplate Template version description, enter the description Template for auto scaling web tier Under Application and OS Images, select My AMIs, select Owned by me Amazon Machine Image (AMI), select WebTierImage Instance type, select t2.micro Key pair, select App-Key Under Network settings, for Security groups select Web-SG Under Advanced details, for IAM instance profile select FCJ-WS-role Scroll down to the bottom of the page and click Create launch template "
+},
+{
+	"uri": "/2-prerequiste/2.3-createvpc/",
+	"title": "Create VPC",
+	"tags": [],
+	"description": "",
+	"content": "As introduced, we will create a VPC with 2 AZs, including 4 Private Subnets for the Database and App Tier, and 2 Public Subnets for the Web Tier. The Internet Gateway will connect to the Internet, and the NAT Gateway will connect to the Private Subnet.\nAccess the VPC interface\nGo to VPC \u0026gt; Your VPCs \u0026gt; Create VPC\nIn the Create VPC interface\nChoose VPC and more* for automatic assistance in VPC creation. Name tag auto-generation, enter the name FCJ-WS-1 Number of Availability Zones (AZs), select 2 AZ Number of public subnets, choose 2 Number of private subnets, choose 4 NAT gateways, in 1 AZ VPC endpints, S3 Gateway Scroll to the bottom of the page and select Create VPC "
+},
+{
+	"uri": "/3-databasedeployment/",
+	"title": "Deploy Database",
+	"tags": [],
+	"description": "",
+	"content": "After configuring the VPC, security groups, and preparing the installation components, the next step is to deploy the Database Tier according to the following model:\nContents Create Subnets Group Create Aurora Database "
+},
+{
+	"uri": "/1-introduce/1.3-lb-asg/",
+	"title": "Load Balancer and Autoscaling Group",
+	"tags": [],
+	"description": "",
+	"content": "By utilizing Load Balancing and Autoscaling Group, it\u0026rsquo;s possible to optimize the performance and scalability of the system.\nLoad Balancing Load Balancing is an essential service in Amazon Web Services (AWS) that allows distributing traffic among different servers and resources to improve performance and ensure the availability of applications. In this workshop, two technologies are used:\nInternal Load Balancing Internal Load Balancing is a feature that helps distribute traffic within an internal network. It is used for the application tier to distribute traffic between web servers within the internal network without exposure to the internet.\nInterface Load Balancing for the Web Tier Interface Load Balancing communicates using the network interface of EC2 instances to distribute traffic. This allows for load balancing traffic across EC2 instances within the same subnet or across different subnets.\nTarget Group A Target Group is a collection of servers or services to which a Load Balancer will forward requests. Each target group can be configured to accept traffic from a specific port and protocol.\nAMI and Launch Template AMI (Amazon Machine Image) is a record of an EC2 virtual machine, including the operating system and application settings. Launch Template is a template used to configure the parameters of an EC2 instance when it is launched.\nAutoscaling Group An Autoscaling Group is a group of EC2 instances managed by AWS Autoscaling, automatically adjusting the number of instances based on configured policies such as CPU load, incoming request count, or other metrics.\n"
+},
+{
+	"uri": "/4-appdeployment/4.4-configureappinstance/",
+	"title": "Configure App Instance",
+	"tags": [],
+	"description": "",
+	"content": "Update authentication information to the Database in the DbConfig.js file located in the application-code/app-tier/ directory that you have downloaded from Github. In this file, fill in the hostname, user, password, and database.\nTo continue, return to the SSH session. Start installing the necessary components for the backend application.\nInstall NVM (Node Version Manager)\ncurl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh | bash source ~/.bashrc Install Node.js\nnvm install 16 nvm use 16 Install PM2 to keep Node.js running\nnpm install -g pm2 Download the App-tier Bucket from S3 to EC2\ncd ~/ aws s3 cp s3://BUCKET_NAME/app-tier/ app-tier --recursive Navigate to the downloaded directory, install, and start PM2\ncd ~/app-tier npm install pm2 start server.js Check the server status\npm2 list Start PM2 server\npm2 startup After starting, you will receive a command line similar to the following. Copy and run it on your machine:\n[PM2] To setup the Startup Script, copy/paste the following command: sudo env PATH=$PATH:/home/ec2-user/.nvm/versions/node/v16.0.0/bin /home/ec2-user/.nvm/versions/node/v16.0.0/lib/node_modules/pm2/bin/pm2 startup systemd -u ec2-user —hp /home/ec2-user Save PM2 configuration\npm2 save This completes the configuration process for your application instance.\nTest the App Instance\nNow let\u0026rsquo;s run some tests to see if the application has been configured correctly and can access data from the Database.\nCheck status:\ncurl http://localhost:4000/health Check Database connection:\ncurl http://localhost:4000/transaction "
+},
+{
+	"uri": "/2-prerequiste/2.4-cretaesecuritygroup/",
+	"title": "Create Security Group",
+	"tags": [],
+	"description": "",
+	"content": "Similar to a firewall component in a LAN network, Security Groups manage access permissions to components within a Virtual Private Cloud (VPC).\nNavigate to VPC \u0026gt; Security Groups \u0026gt; Create security group to create a security group.\nInternet Facing Load Balancer Security Group\nFor the Internet Facing Load Balancer, the Security Group will allow HTTP access to port 80 from the Internet to the Web Tier Load Balancer.\nSecurity Group name, enter Internet-Facing-LB-SG Description, provide a description VPC, select the FCJ-WS-1 VPC. Add Inbound rules to allow My IP to access HTTP from port 80 Bastion Host Security Group\nThe Bastion Host allows SSH from Local\nSecurity Group name, enter Bastion-SG Description, provide a description VPC, select the FCJ-WS-1 VPC. Add Inbound rules to allow My IP to access SSH from port 22 Web Security Group\nFor Public Instances in the web tier, create a Security Group to allow traffic from the load balancer, SSH from the local machine for EC2 configuration, and HTTP from the local machine IP for website testing.\nSecurity Group name, enter Web-SG Description, provide a description VPC, select the FCJ-WS-1 VPC. Add the following Inbound rules: Allow My IP to access SSH from port 22 Allow HTTP from My IP to port 80 Allow HTTP from the \u0026ldquo;Internet-Facing-LB-SG\u0026rdquo; Security Group to port 22 Internal Facing Load Balancer Security Group\nThis security group is used to manage HTTP traffic from the Web Security Group to port 80. This allows traffic from instances in the Web Tier to access the internal load balancer.\nSecurity Group name, enter Internal-LB-SG Description, provide a description VPC, select FCJ-WS-1 Add Inbound rules to allow Web-SG to access HTTP to port 80 App Security Group\nThis security group is used to manage HTTP traffic from the Internal-LB-SG to port 80, and SSH traffic from the Bastion-SG to port 22.\nSecurity Group name, enter App-SG Description, provide a description VPC, select FCJ-WS-1 Add the following Inbound rules: 1. Allow Bastion-SG to access SSH from port 22 2. Allow Internal-LB-SG TCP from port 4000 Database Security Group\nThis security group allows EC2 instances in the App Tier to access the MySQL Database through port 3306.\nSecurity Group name, enter Database-SG Description, provide a description VPC, select FCJ-WS-1 VPC Add Inbound rules to allow App-SG to access from port 3306 "
+},
+{
+	"uri": "/7-externalloadblacingandautoscaling/7.4-launchtemlate/",
+	"title": "Create Template",
+	"tags": [],
+	"description": "",
+	"content": "Before implementing Autoscaling, we need a Template with the AMI created in section 7.1.\nAccess the EC2 Console Interface\nIn the left-hand navigation pane, select Launch Template \u0026gt; Create Launch Template. For Launch template name, enter WebTierTemplate. For Template version description, provide a description like Template for auto scaling web tier. Under Application and OS Images, choose My AMIs, then select Owned by me. For Amazon Machine Image (AMI), select WebTierImage. For Instance type, choose t2.micro. For Key pair, select Web-Key. Under Network settings, for Security groups, choose Web-SG. Under Advanced details, for IAM instance profile, choose FCJ-WS-role. Scroll to the bottom of the page and click Create launch template. "
+},
+{
+	"uri": "/4-appdeployment/",
+	"title": "Deploy App Tier",
+	"tags": [],
+	"description": "",
+	"content": "Create and configure EC2 instances for the App Tier with necessary software, deploying a Node.js application on port 4000. Continue setting up the connection to the Database created in step 3. To SSH into the EC2 App Tier, located in the Private Subnet, an EC2 Bastion Host placed in the Public Subnet must be used as an intermediary access point. Follow the model below:\nContents Create Bastion Host Deploy App Instance Configure Database Connection Configure App Instance "
+},
+{
+	"uri": "/5-internalloadblacingandautoscaling/5.5-autoscaling/",
+	"title": "Create Autoscaling Group",
+	"tags": [],
+	"description": "",
+	"content": "In the final part of part 5, we will create an Auto Scaling Group for the App Tier based on the Target Group just created.\nAccess EC2 Console\nIn the left navigation pane, choose Auto Scaling Groups \u0026gt; Create Auto Scaling group Launch template name, enter the name AppTierTemplate Step 1: Choose launch template Enter the name, AppTier-ASG For Launch template, select AppTierTemplate Next Step 2: Choose instance launch options VPC, select FCJ-WS-1 VPC Subnet, select Private 1 and 2 Next Step 3: Configure advanced options Load balancing, select Attach to an existing load balancer Existing load balancer target groups, select AppTier-TG | HTTP Next Step 4: Configure group size and scaling Desired capacity, enter 2 Min desired capacity, enter 2 Max desired capacity, enter 4 Next Step 5: Add notifications Select Create topic Send a notification to, enter your email address Next Step 7: Review Click Create Auto Scaling group "
+},
+{
+	"uri": "/7-externalloadblacingandautoscaling/7.5-autoscaling/",
+	"title": "Create Template",
+	"tags": [],
+	"description": "",
+	"content": "In the final part of section 7, we will create an Auto Scaling Group for the App Tier based on the Target Group just created.\nAccess the EC2 Console Interface\nIn the left-hand navigation pane, select Auto Scaling Groups \u0026gt; Create Auto Scaling group. For Launch template name, enter WebTierTemplate. Step 1: Choose launch template Enter a name, WebTier-ASG. For Launch template, select WebTierTemplate. Next Step 2: Choose instance launch options For VPC, choose FCJ-WS-1 VPC. For Subnet, select Public 1 and 2. Next Step 3: Configure advanced options For Load balancing, select Attach to an existing load balancer. For Existing load balancer target groups, choose WebTier-TG | HTTP. Next Step 4: Configure group size and scaling For Desired capacity, enter 2. For Min desired capacity, enter 2. For Max desired capacity, enter 4. Next Step 5: Add notifications Select the FCJ-WS-1 topic. Next Step 7: Review Click Create Auto Scaling group. "
+},
+{
+	"uri": "/5-internalloadblacingandautoscaling/",
+	"title": "Deploy Internal Load Balancing and Auto Scaling",
+	"tags": [],
+	"description": "",
+	"content": "In this section of the workshop, we will create an Amazon Machine Image (AMI) of the App Instance we just created and use it to deploy Auto Scaling and Load Balancing to increase the availability of the App Tier.\nContents Create App Tier AMI Create Target Group Create Internal Load Balancer Create Template Create Auto Scaling Group "
+},
+{
+	"uri": "/6-webdeployment/",
+	"title": "Deploy Web Tier",
+	"tags": [],
+	"description": "",
+	"content": "In the final layer of the workshop, we will deploy EC2 instances for the Web Tier and necessary software for NGINX server and React.js website.\nContents Deploy App Instance Configure Web Instance "
+},
+{
+	"uri": "/7-externalloadblacingandautoscaling/",
+	"title": "Deploying External Load Balancing and Auto Scaling",
+	"tags": [],
+	"description": "",
+	"content": "In this section of the workshop, we will create an Amazon Machine Image (AMI) of the Web Instance just created and use it to deploy Auto Scaling and Load Balancing to increase the availability of the Web Tier.\nContents Create VPC Create Subnet Create Internet Gateway Create Route Table Create Security Group "
+},
+{
+	"uri": "/8-test/",
+	"title": "Check Operational Capability",
+	"tags": [],
+	"description": "",
+	"content": " Auto Scaling Capability\nWebTier-ASG successfully launches 2 EC2 instances in the Web Tier. AppTier-ASG successfully launches 2 EC2 instances in the App Instance. Attempt to terminate an instance, receiving email notification indicating automatic launch of a replacement instance. Website Operational Capability\nCopy the Internet-facing load balancing DNS and access the website. Verify the database functionality by entering and deleting data. "
+},
+{
+	"uri": "/9-cleanup/",
+	"title": "Cleanup Resources",
+	"tags": [],
+	"description": "",
+	"content": "To avoid resource wastage and incurring unnecessary costs, we will check and delete resources step by step following the deployment from 1-7.\nDelete Database\nDelete Read Node. Similarly, delete Write Node. Delete the Database cluster, choosing not to retain snapshots to avoid charges. Delete Load Balancers and Auto Scaling Tools\nDelete AutoScaling Group. Delete Load Balancer. Delete Target Group. Delete Template. Delete AMI. Delete EC2 Instances and Snapshots\nTerminate EC2 instances. Check and delete Snapshots. Delete Components in VPC\nDelete NAT Gateway. Release Elastic IP. "
+},
+{
+	"uri": "/categories/",
+	"title": "Categories",
+	"tags": [],
+	"description": "",
+	"content": ""
+},
+{
+	"uri": "/tags/",
+	"title": "Tags",
+	"tags": [],
+	"description": "",
+	"content": ""
+}]

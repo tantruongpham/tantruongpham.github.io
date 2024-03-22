@@ -1,0 +1,1988 @@
+<!DOCTYPE html>
+<html lang="en" class="js csstransforms3d">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="generator" content="Hugo 0.123.8">
+    <meta name="description" content="">
+<meta name="author" content="journeyoftheaverageguy@gmail.com">
+
+    <link rel="icon" href="../../images/favicon.png" type="image/png">
+
+    <title>Create Autoscaling Group :: BUILDING A 3-TIER WEB APPLICATION ARCHITECTURE WITH AWS.</title>
+
+    
+    <link href="../../css/nucleus.css?1711093730" rel="stylesheet">
+    <link href="../../css/fontawesome-all.min.css?1711093730" rel="stylesheet">
+    <link href="../../css/hybrid.css?1711093730" rel="stylesheet">
+    <link href="../../css/featherlight.min.css?1711093730" rel="stylesheet">
+    <link href="../../css/perfect-scrollbar.min.css?1711093730" rel="stylesheet">
+    <link href="../../css/auto-complete.css?1711093730" rel="stylesheet">
+    <link href="../../css/atom-one-dark-reasonable.css?1711093730" rel="stylesheet">
+    <link href="../../css/theme.css?1711093730" rel="stylesheet">
+    <link href="../../css/hugo-theme.css?1711093730" rel="stylesheet">
+    
+    <link href="../../css/theme-workshop.css?1711093730" rel="stylesheet">
+    
+    
+
+    <script src="../../js/jquery-3.3.1.min.js?1711093730"></script>
+
+    <style>
+      :root #header + #content > #left > #rlblock_left{
+          display:none !important;
+      }
+      
+    </style>
+    
+  </head>
+  <body class="" data-url="../../5-internalloadblacingandautoscaling/5.5-autoscaling/">
+    <nav id="sidebar" class="showVisitedLinks">
+
+
+
+  <div id="header-wrapper">
+    <div id="header">
+      <a id="logo" href="../../">
+
+<svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 30" width="30%"><defs><style>.cls-1{fill:#fff;}.cls-2{fill:#f90;fill-rule:evenodd;}</style></defs><title>AWS-Logo_White-Color</title><path class="cls-1" d="M14.09,10.85a4.7,4.7,0,0,0,.19,1.48,7.73,7.73,0,0,0,.54,1.19.77.77,0,0,1,.12.38.64.64,0,0,1-.32.49l-1,.7a.83.83,0,0,1-.44.15.69.69,0,0,1-.49-.23,3.8,3.8,0,0,1-.6-.77q-.25-.42-.51-1a6.14,6.14,0,0,1-4.89,2.3,4.54,4.54,0,0,1-3.32-1.19,4.27,4.27,0,0,1-1.22-3.2A4.28,4.28,0,0,1,3.61,7.75,6.06,6.06,0,0,1,7.69,6.46a12.47,12.47,0,0,1,1.76.13q.92.13,1.91.36V5.73a3.65,3.65,0,0,0-.79-2.66A3.81,3.81,0,0,0,7.86,2.3a7.71,7.71,0,0,0-1.79.22,12.78,12.78,0,0,0-1.79.57,4.55,4.55,0,0,1-.58.22l-.26,0q-.35,0-.35-.52V2a1.09,1.09,0,0,1,.12-.58,1.2,1.2,0,0,1,.47-.35A10.88,10.88,0,0,1,5.77.32,10.19,10.19,0,0,1,8.36,0a6,6,0,0,1,4.35,1.35,5.49,5.49,0,0,1,1.38,4.09ZM7.34,13.38a5.36,5.36,0,0,0,1.72-.31A3.63,3.63,0,0,0,10.63,12,2.62,2.62,0,0,0,11.19,11a5.63,5.63,0,0,0,.16-1.44v-.7a14.35,14.35,0,0,0-1.53-.28,12.37,12.37,0,0,0-1.56-.1,3.84,3.84,0,0,0-2.47.67A2.34,2.34,0,0,0,5,11a2.35,2.35,0,0,0,.61,1.76A2.4,2.4,0,0,0,7.34,13.38Zm13.35,1.8a1,1,0,0,1-.64-.16,1.3,1.3,0,0,1-.35-.65L15.81,1.51a3,3,0,0,1-.15-.67.36.36,0,0,1,.41-.41H17.7a1,1,0,0,1,.65.16,1.4,1.4,0,0,1,.33.65l2.79,11,2.59-11A1.17,1.17,0,0,1,24.39.6a1.1,1.1,0,0,1,.67-.16H26.4a1.1,1.1,0,0,1,.67.16,1.17,1.17,0,0,1,.32.65L30,12.39,32.88,1.25A1.39,1.39,0,0,1,33.22.6a1,1,0,0,1,.65-.16h1.54a.36.36,0,0,1,.41.41,1.36,1.36,0,0,1,0,.26,3.64,3.64,0,0,1-.12.41l-4,12.86a1.3,1.3,0,0,1-.35.65,1,1,0,0,1-.64.16H29.25a1,1,0,0,1-.67-.17,1.26,1.26,0,0,1-.32-.67L25.67,3.64,23.11,14.34a1.26,1.26,0,0,1-.32.67,1,1,0,0,1-.67.17Zm21.36.44a11.28,11.28,0,0,1-2.56-.29,7.44,7.44,0,0,1-1.92-.67,1,1,0,0,1-.61-.93v-.84q0-.52.38-.52a.9.9,0,0,1,.31.06l.42.17a8.77,8.77,0,0,0,1.83.58,9.78,9.78,0,0,0,2,.2,4.48,4.48,0,0,0,2.43-.55,1.76,1.76,0,0,0,.86-1.57,1.61,1.61,0,0,0-.45-1.16A4.29,4.29,0,0,0,43,9.22l-2.41-.76A5.15,5.15,0,0,1,38,6.78a3.94,3.94,0,0,1-.83-2.41,3.7,3.7,0,0,1,.45-1.85,4.47,4.47,0,0,1,1.19-1.37A5.27,5.27,0,0,1,40.51.29,7.4,7.4,0,0,1,42.6,0a8.87,8.87,0,0,1,1.12.07q.57.07,1.08.19t.95.26a4.27,4.27,0,0,1,.7.29,1.59,1.59,0,0,1,.49.41.94.94,0,0,1,.15.55v.79q0,.52-.38.52a1.76,1.76,0,0,1-.64-.2,7.74,7.74,0,0,0-3.2-.64,4.37,4.37,0,0,0-2.21.47,1.6,1.6,0,0,0-.79,1.48,1.58,1.58,0,0,0,.49,1.18,4.94,4.94,0,0,0,1.83.92L44.55,7a5.08,5.08,0,0,1,2.57,1.6A3.76,3.76,0,0,1,47.9,11a4.21,4.21,0,0,1-.44,1.93,4.4,4.4,0,0,1-1.21,1.47,5.43,5.43,0,0,1-1.85.93A8.25,8.25,0,0,1,42.05,15.62Z"></path><path class="cls-2" d="M45.19,23.81C39.72,27.85,31.78,30,25,30A36.64,36.64,0,0,1,.22,20.57c-.51-.46-.06-1.09.56-.74A49.78,49.78,0,0,0,25.53,26.4,49.23,49.23,0,0,0,44.4,22.53C45.32,22.14,46.1,23.14,45.19,23.81Z"></path><path class="cls-2" d="M47.47,21.21c-.7-.9-4.63-.42-6.39-.21-.53.06-.62-.4-.14-.74,3.13-2.2,8.27-1.57,8.86-.83s-.16,5.89-3.09,8.35c-.45.38-.88.18-.68-.32C46.69,25.8,48.17,22.11,47.47,21.21Z"></path></svg>
+
+</a>
+
+    </div>
+    
+        <div class="searchbox">
+    <label for="search-by"><i class="fas fa-search"></i></label>
+    <input data-search-input id="search-by" type="search" placeholder="Search...">
+    <span data-search-clear=""><i class="fas fa-times"></i></span>
+</div>
+
+<script type="text/javascript" src="../../js/lunr.min.js?1711093730"></script>
+<script type="text/javascript" src="../../js/auto-complete.js?1711093730"></script>
+<script type="text/javascript">
+    
+        var baseurl = "\/";
+    
+</script>
+<script type="text/javascript" src="../../js/search.js?1711093730"></script>
+
+    
+  </div>
+
+    <div class="highlightable">
+    <ul class="topics">
+
+        
+          
+          
+
+
+
+
+ 
+  
+    
+    <li data-nav-id="/1-introduce/" title="Introduction" class="dd-item 
+        
+        
+        
+        ">
+      <a href="../../1-introduce/">
+          <b>1. </b>Introduction
+          
+            <i class="fas fa-check read-icon"></i>
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+            
+          
+          
+          
+        
+          
+            
+            
+
+
+
+
+ 
+  
+    
+    <li data-nav-id="/1-introduce/1.1-vpc/" title="Virtual Private Cloud (VPC)" class="dd-item 
+        
+        
+        
+        ">
+      <a href="../../1-introduce/1.1-vpc/">
+          <b>1.1 </b>Virtual Private Cloud (VPC)
+          
+            <i class="fas fa-check read-icon"></i>
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+
+
+ 
+  
+    
+    <li data-nav-id="/1-introduce/1.2-ec2-database/" title="Bastion Host, EC2, and Aurora Database" class="dd-item 
+        
+        
+        
+        ">
+      <a href="../../1-introduce/1.2-ec2-database/">
+          <b>1.2 </b>Bastion Host, EC2, and Aurora Database
+          
+            <i class="fas fa-check read-icon"></i>
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+
+
+ 
+  
+    
+    <li data-nav-id="/1-introduce/1.3-lb-asg/" title="Load Balancer and Autoscaling Group" class="dd-item 
+        
+        
+        
+        ">
+      <a href="../../1-introduce/1.3-lb-asg/">
+          <b>1.3 </b>Load Balancer and Autoscaling Group
+          
+            <i class="fas fa-check read-icon"></i>
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+          
+          
+
+
+
+
+ 
+  
+    
+    <li data-nav-id="/2-prerequiste/" title="Preparation Steps" class="dd-item 
+        
+        
+        
+        ">
+      <a href="../../2-prerequiste/">
+          <b>2. </b>Preparation Steps
+          
+            <i class="fas fa-check read-icon"></i>
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+            
+          
+          
+          
+        
+          
+            
+            
+
+
+
+
+ 
+  
+    
+    <li data-nav-id="/2-prerequiste/2.1-creates3bucket/" title="Create S3 Bucket" class="dd-item 
+        
+        
+        
+        ">
+      <a href="../../2-prerequiste/2.1-creates3bucket/">
+          <b>2.1 </b>Create S3 Bucket
+          
+            <i class="fas fa-check read-icon"></i>
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+
+
+ 
+  
+    
+    <li data-nav-id="/2-prerequiste/2.2-createiamrole/" title="Create IAM Role for EC2 Instances" class="dd-item 
+        
+        
+        
+        ">
+      <a href="../../2-prerequiste/2.2-createiamrole/">
+          <b>2.2 </b>Create IAM Role for EC2 Instances
+          
+            <i class="fas fa-check read-icon"></i>
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+
+
+ 
+  
+    
+    <li data-nav-id="/2-prerequiste/2.3-createvpc/" title="Create VPC" class="dd-item 
+        
+        
+        
+        ">
+      <a href="../../2-prerequiste/2.3-createvpc/">
+          <b>2.3 </b>Create VPC
+          
+            <i class="fas fa-check read-icon"></i>
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+
+
+ 
+  
+    
+    <li data-nav-id="/2-prerequiste/2.4-cretaesecuritygroup/" title="Create Security Group" class="dd-item 
+        
+        
+        
+        ">
+      <a href="../../2-prerequiste/2.4-cretaesecuritygroup/">
+          <b>2.4 </b>Create Security Group
+          
+            <i class="fas fa-check read-icon"></i>
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+          
+          
+
+
+
+
+ 
+  
+    
+    <li data-nav-id="/3-databasedeployment/" title="Deploy Database" class="dd-item 
+        
+        
+        
+        ">
+      <a href="../../3-databasedeployment/">
+          <b>3. </b>Deploy Database
+          
+            <i class="fas fa-check read-icon"></i>
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+            
+          
+          
+          
+        
+          
+            
+            
+
+
+
+
+ 
+  
+    
+    <li data-nav-id="/3-databasedeployment/3.1-subnetsgroup/" title="Create Subnets Group" class="dd-item 
+        
+        
+        
+        ">
+      <a href="../../3-databasedeployment/3.1-subnetsgroup/">
+          <b>3.1 </b>Create Subnets Group
+          
+            <i class="fas fa-check read-icon"></i>
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+
+
+ 
+  
+    
+    <li data-nav-id="/3-databasedeployment/3.2-createauoradatabase/" title="Create Aurora Database" class="dd-item 
+        
+        
+        
+        ">
+      <a href="../../3-databasedeployment/3.2-createauoradatabase/">
+          <b>3.2 </b>Create Aurora Database
+          
+            <i class="fas fa-check read-icon"></i>
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+          
+          
+
+
+
+
+ 
+  
+    
+    <li data-nav-id="/4-appdeployment/" title="Deploy App Tier" class="dd-item 
+        
+        
+        
+        ">
+      <a href="../../4-appdeployment/">
+          <b>4. </b>Deploy App Tier
+          
+            <i class="fas fa-check read-icon"></i>
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+            
+          
+          
+          
+        
+          
+            
+            
+
+
+
+
+ 
+  
+    
+    <li data-nav-id="/4-appdeployment/4.1-bastionhost/" title="Create Bastion Host" class="dd-item 
+        
+        
+        
+        ">
+      <a href="../../4-appdeployment/4.1-bastionhost/">
+          <b>4.1 </b>Create Bastion Host
+          
+            <i class="fas fa-check read-icon"></i>
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+
+
+ 
+  
+    
+    <li data-nav-id="/4-appdeployment/4.2appinstancedeployment/" title="Deploy App Instance" class="dd-item 
+        
+        
+        
+        ">
+      <a href="../../4-appdeployment/4.2appinstancedeployment/">
+          <b>4.2 </b>Deploy App Instance
+          
+            <i class="fas fa-check read-icon"></i>
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+
+
+ 
+  
+    
+    <li data-nav-id="/4-appdeployment/4.3-configuredatabase/" title="Configure Database Connection" class="dd-item 
+        
+        
+        
+        ">
+      <a href="../../4-appdeployment/4.3-configuredatabase/">
+          <b>4.3 </b>Configure Database Connection
+          
+            <i class="fas fa-check read-icon"></i>
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+
+
+ 
+  
+    
+    <li data-nav-id="/4-appdeployment/4.4-configureappinstance/" title="Configure App Instance" class="dd-item 
+        
+        
+        
+        ">
+      <a href="../../4-appdeployment/4.4-configureappinstance/">
+          <b>4.4 </b>Configure App Instance
+          
+            <i class="fas fa-check read-icon"></i>
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+          
+          
+
+
+
+
+ 
+  
+    
+    <li data-nav-id="/5-internalloadblacingandautoscaling/" title="Deploy Internal Load Balancing and Auto Scaling" class="dd-item 
+        parent
+        
+        
+        ">
+      <a href="../../5-internalloadblacingandautoscaling/">
+          <b>5. </b>Deploy Internal Load Balancing and Auto Scaling
+          
+            <i class="fas fa-check read-icon"></i>
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+            
+          
+          
+          
+        
+          
+            
+            
+
+
+
+
+ 
+  
+    
+    <li data-nav-id="/5-internalloadblacingandautoscaling/5.1-appterami/" title="Create App Tier AMI" class="dd-item 
+        
+        
+        
+        ">
+      <a href="../../5-internalloadblacingandautoscaling/5.1-appterami/">
+          <b>5.1 </b>Create App Tier AMI
+          
+            <i class="fas fa-check read-icon"></i>
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+
+
+ 
+  
+    
+    <li data-nav-id="/5-internalloadblacingandautoscaling/5.2-targetgroup/" title="Create Target Group" class="dd-item 
+        
+        
+        
+        ">
+      <a href="../../5-internalloadblacingandautoscaling/5.2-targetgroup/">
+          <b>5.2 </b>Create Target Group
+          
+            <i class="fas fa-check read-icon"></i>
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+
+
+ 
+  
+    
+    <li data-nav-id="/5-internalloadblacingandautoscaling/5.3-internalloadblancer/" title="Create Internal Load Balancer" class="dd-item 
+        
+        
+        
+        ">
+      <a href="../../5-internalloadblacingandautoscaling/5.3-internalloadblancer/">
+          <b>5.3 </b>Create Internal Load Balancer
+          
+            <i class="fas fa-check read-icon"></i>
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+
+
+ 
+  
+    
+    <li data-nav-id="/5-internalloadblacingandautoscaling/5.4-launchtemlate/" title="Create Template" class="dd-item 
+        
+        
+        
+        ">
+      <a href="../../5-internalloadblacingandautoscaling/5.4-launchtemlate/">
+          <b>5.4 </b>Create Template
+          
+            <i class="fas fa-check read-icon"></i>
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+
+
+ 
+  
+    
+    <li data-nav-id="/5-internalloadblacingandautoscaling/5.5-autoscaling/" title="Create Autoscaling Group" class="dd-item 
+        
+        active
+        
+        ">
+      <a href="../../5-internalloadblacingandautoscaling/5.5-autoscaling/">
+          <b>5.5</b>Create Autoscaling Group
+          
+            <i class="fas fa-check read-icon"></i>
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+          
+          
+
+
+
+
+ 
+  
+    
+    <li data-nav-id="/6-webdeployment/" title="Deploy Web Tier" class="dd-item 
+        
+        
+        
+        ">
+      <a href="../../6-webdeployment/">
+          <b>6. </b>Deploy Web Tier
+          
+            <i class="fas fa-check read-icon"></i>
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+            
+          
+          
+          
+        
+          
+            
+            
+
+
+
+
+ 
+  
+    
+    <li data-nav-id="/6-webdeployment/6.1-webinstancedeployment/" title="Deploy App Instance" class="dd-item 
+        
+        
+        
+        ">
+      <a href="../../6-webdeployment/6.1-webinstancedeployment/">
+          <b>6.1 </b>Deploy App Instance
+          
+            <i class="fas fa-check read-icon"></i>
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+
+
+ 
+  
+    
+    <li data-nav-id="/6-webdeployment/6.2-configurewebinstance/" title="Web Instance Configuration" class="dd-item 
+        
+        
+        
+        ">
+      <a href="../../6-webdeployment/6.2-configurewebinstance/">
+          <b>6.2 </b>Web Instance Configuration
+          
+            <i class="fas fa-check read-icon"></i>
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+          
+          
+
+
+
+
+ 
+  
+    
+    <li data-nav-id="/7-externalloadblacingandautoscaling/" title="Deploying External Load Balancing and Auto Scaling" class="dd-item 
+        
+        
+        
+        ">
+      <a href="../../7-externalloadblacingandautoscaling/">
+          <b>7. </b>Deploying External Load Balancing and Auto Scaling
+          
+            <i class="fas fa-check read-icon"></i>
+          
+      </a>
+      
+      
+        <ul>
+          
+          
+            
+          
+          
+          
+        
+          
+            
+            
+
+
+
+
+ 
+  
+    
+    <li data-nav-id="/7-externalloadblacingandautoscaling/7.1-appterami/" title="Create Web Tier AMI" class="dd-item 
+        
+        
+        
+        ">
+      <a href="../../7-externalloadblacingandautoscaling/7.1-appterami/">
+          <b>7.1 </b>Create Web Tier AMI
+          
+            <i class="fas fa-check read-icon"></i>
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+
+
+ 
+  
+    
+    <li data-nav-id="/7-externalloadblacingandautoscaling/7.2-targetgroup/" title="Create Target Group" class="dd-item 
+        
+        
+        
+        ">
+      <a href="../../7-externalloadblacingandautoscaling/7.2-targetgroup/">
+          <b>7.2 </b>Create Target Group
+          
+            <i class="fas fa-check read-icon"></i>
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+
+
+ 
+  
+    
+    <li data-nav-id="/7-externalloadblacingandautoscaling/7.3-internetfacingloadbalancer/" title="Create Internet Facing Load Balancer" class="dd-item 
+        
+        
+        
+        ">
+      <a href="../../7-externalloadblacingandautoscaling/7.3-internetfacingloadbalancer/">
+          <b>7.3 </b>Create Internet Facing Load Balancer
+          
+            <i class="fas fa-check read-icon"></i>
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+
+
+ 
+  
+    
+    <li data-nav-id="/7-externalloadblacingandautoscaling/7.4-launchtemlate/" title="Create Template" class="dd-item 
+        
+        
+        
+        ">
+      <a href="../../7-externalloadblacingandautoscaling/7.4-launchtemlate/">
+          <b>7.4 </b>Create Template
+          
+            <i class="fas fa-check read-icon"></i>
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+            
+            
+
+
+
+
+ 
+  
+    
+    <li data-nav-id="/7-externalloadblacingandautoscaling/7.5-autoscaling/" title="Create Template" class="dd-item 
+        
+        
+        
+        ">
+      <a href="../../7-externalloadblacingandautoscaling/7.5-autoscaling/">
+          <b>7.5 </b>Create Template
+          
+            <i class="fas fa-check read-icon"></i>
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+            
+          
+        
+        </ul>
+              
+    </li>
+  
+ 
+
+          
+          
+
+
+
+
+ 
+  
+    
+    <li data-nav-id="/8-test/" title="Check Operational Capability" class="dd-item 
+        
+        
+        
+        ">
+      <a href="../../8-test/">
+          <b>8. </b>Check Operational Capability
+          
+            <i class="fas fa-check read-icon"></i>
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+          
+          
+
+
+
+
+ 
+  
+    
+    <li data-nav-id="/9-cleanup/" title="Cleanup Resources" class="dd-item 
+        
+        
+        
+        ">
+      <a href="../../9-cleanup/">
+          <b>9. </b>Cleanup Resources
+          
+            <i class="fas fa-check read-icon"></i>
+          
+      </a>
+      
+              
+    </li>
+  
+ 
+
+          
+         
+    </ul>
+
+    
+    
+      <section id="shortcuts">
+        <h3>More</h3>
+        <ul>
+          
+              <li> 
+                  <a class="padding" href="https://aws.amazon.com/blogs"><i class='fab fa-aws'></i> AWS Study Group - Blog</a>
+              </li>
+          
+              <li> 
+                  <a class="padding" href="https://www.facebook.com/groups/awsstudygroupfcj"><i class='fab fa-facebook'></i> AWS Study Group - FB Group</a>
+              </li>
+          
+        </ul>
+      </section>
+    
+
+    
+    <section id="prefooter">
+      <hr/>
+      <ul>
+      
+        <li>
+          <a class="padding">
+            <i class="fas fa-language fa-fw"></i>
+          <div class="select-style">
+            <select id="select-language" onchange="location = this.value;">
+          
+          
+          
+              
+              
+                  
+                    
+                    
+                      <option id="en" value="/5-internalloadblacingandautoscaling/5.5-autoscaling/" selected>English</option>
+                    
+                  
+              
+                  
+              
+          
+              
+              
+                  
+              
+                  
+                    
+                    
+                      <option id="vi" value="/vi/5-internalloadblacingandautoscaling/5.5-autoscaling/">Tiếng Việt</option>
+                    
+                  
+              
+          
+        </select>
+        <svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+          width="255px" height="255px" viewBox="0 0 255 255" style="enable-background:new 0 0 255 255;" xml:space="preserve">
+          <g>
+            <g id="arrow-drop-down">
+              <polygon points="0,63.75 127.5,191.25 255,63.75 		" />
+            </g>
+          </g>
+        </svg>
+        </div>
+        </a>
+        </li>
+      
+      
+      
+        <li><a class="padding" href="#" data-clear-history-toggle=""><i class="fas fa-history fa-fw"></i> Clear History</a></li>
+      
+      </ul>
+    </section>
+    
+    <section id="footer">
+      <left>
+    
+     <b> Workshop</b> <br>
+    <img src="https://hitwebcounter.com/counter/counter.php?page=7920860&style=0038&nbdigits=9&type=page&initCount=0" title="Migrate" Alt="web counter"   border="0" /></a>  <br>
+     <b> <a href="https://cloudjourney.awsstudygroup.com/">Cloud Journey</a></b> <br>
+    <img src="https://hitwebcounter.com/counter/counter.php?page=7830807&style=0038&nbdigits=9&type=page&initCount=0" title="Total CLoud Journey" Alt="web counter"   border="0"   />
+     
+</left>
+<left>
+    <br>
+    <br>
+        <b> Last Updated </b> <br>
+        <i><font color=orange>26-11-2023</font></i>
+    </left>
+    <left>
+        <br>
+        <br>
+            <b> Team </b> <br>
+            <i> <a href="https://www.linkedin.com/in/jotaguy"  style="color:orange">Gia Hưng </a> <br>
+        </i>
+        </left>
+
+<script async defer src="https://buttons.github.io/buttons.js"></script>
+
+    </section>
+  </div>
+</nav>
+
+
+
+
+        <section id="body">
+        <div id="overlay"></div>
+        <div class="padding highlightable">
+              
+              <div>
+                <div id="top-bar">
+                
+                
+                <div id="breadcrumbs" itemscope="" itemtype="http://data-vocabulary.org/Breadcrumb">
+                    <span id="sidebar-toggle-span">
+                        <a href="#" id="sidebar-toggle" data-sidebar-toggle="">
+                          <i class="fas fa-bars"></i>
+                        </a>
+                    </span>
+                  
+                  <span id="toc-menu"><i class="fas fa-list-alt"></i></span>
+                  
+                  <span class="links">
+                 
+                 
+                    
+          
+          
+            
+            
+          
+          
+            
+            
+          
+          
+            <a href='../../'>Building a 3-tier Web Application Architecture with AWS</a> > <a href='../../5-internalloadblacingandautoscaling/'>Deploy Internal Load Balancing and Auto Scaling</a> > Create Autoscaling Group
+          
+        
+          
+        
+          
+        
+                 
+                  </span>
+                </div>
+                
+                    <div class="progress">
+    <div class="wrapper">
+<nav id="TableOfContents"></nav>
+    </div>
+</div>
+
+                
+              </div>
+            </div>
+            
+        <div id="head-tags">
+        
+        </div>
+        
+        <div id="body-inner">
+          
+            <h1>
+              
+              Create Autoscaling Group
+            </h1>
+          
+
+        
+
+
+
+	<p>In the final part of part 5, we will create an Auto Scaling Group for the App Tier based on the Target Group just created.</p>
+<ol>
+<li>
+<p><strong>Access EC2 Console</strong></p>
+<ul>
+<li>In the left navigation pane, choose <strong>Auto Scaling Groups</strong> &gt; <strong>Create Auto Scaling group</strong></li>
+<li><strong>Launch template name</strong>, enter the name <strong>AppTierTemplate</strong></li>
+<li>Step 1: <strong>Choose launch template</strong>
+<ul>
+<li>Enter the name, <strong>AppTier-ASG</strong></li>
+<li>For Launch template, select <strong>AppTierTemplate</strong></li>
+</ul>
+</li>
+</ul>
+<p><img alt="Autoscaling" src="../../images/5/5.5/55-01.png?featherlight=false&width=70pc"></p>
+<ul>
+<li>Next Step 2: <strong>Choose instance launch options</strong>
+<ul>
+<li><strong>VPC</strong>, select <strong>FCJ-WS-1</strong> VPC</li>
+<li><strong>Subnet</strong>, select Private 1 and 2</li>
+</ul>
+</li>
+</ul>
+<p><img alt="Autoscaling" src="../../images/5/5.5/55-01.png?featherlight=false&width=70pc"></p>
+<ul>
+<li>Next Step 3: <strong>Configure advanced options</strong>
+<ul>
+<li><strong>Load balancing</strong>, select <strong>Attach to an existing load balancer</strong></li>
+<li><strong>Existing load balancer target groups</strong>, select AppTier-TG | HTTP</li>
+</ul>
+</li>
+</ul>
+<p><img alt="Autoscaling" src="../../images/5/5.5/55-02.png?featherlight=false&width=70pc"></p>
+<ul>
+<li>Next Step 4: <strong>Configure group size and scaling</strong>
+<ul>
+<li><strong>Desired capacity</strong>, enter <strong>2</strong></li>
+<li><strong>Min desired capacity</strong>, enter <strong>2</strong></li>
+<li><strong>Max desired capacity</strong>, enter <strong>4</strong></li>
+</ul>
+</li>
+</ul>
+<p><img alt="Autoscaling" src="../../images/5/5.5/55-03.png?featherlight=false&width=70pc"></p>
+<ul>
+<li>Next Step 5: <strong>Add notifications</strong>
+<ul>
+<li>Select <strong>Create topic</strong></li>
+<li><strong>Send a notification to</strong>, enter your email address</li>
+</ul>
+</li>
+</ul>
+<p><img alt="Autoscaling" src="../../images/5/5.5/55-04.png?featherlight=false&width=70pc"></p>
+<ul>
+<li>Next Step 7: <strong>Review</strong>
+<ul>
+<li>Click <strong>Create Auto Scaling group</strong></li>
+</ul>
+</li>
+</ul>
+<p><img alt="Autoscaling" src="../../images/5/5.5/55-05.png?featherlight=false&width=70pc"></p>
+</li>
+</ol>
+
+
+
+
+
+<footer class=" footline" >
+	
+</footer>
+
+        
+        </div> 
+        
+
+      </div>
+
+    <div id="navigation">
+        
+        
+        
+        
+            
+            
+                
+                    
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                        
+                        
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                        
+                        
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                        
+                        
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                        
+                    
+                    
+
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+                        
+            
+            
+                
+                    
+                
+                
+
+                    
+                    
+                    
+
+                    
+            
+        
+                    
+            
+        
+        
+        
+
+
+	 
+	 
+		
+			<a class="nav nav-prev" href="../../5-internalloadblacingandautoscaling/5.4-launchtemlate/" title="Create Template"> <i class="fa fa-chevron-left"></i></a>
+		
+		
+			<a class="nav nav-next" href="../../6-webdeployment/" title="Deploy Web Tier" style="margin-right: 0px;"><i class="fa fa-chevron-right"></i></a>
+		
+	
+    </div>
+
+    </section>
+    
+    <div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;">
+      <div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div>
+    </div>
+    <script src="../../js/clipboard.min.js?1711093730"></script>
+    <script src="../../js/perfect-scrollbar.min.js?1711093730"></script>
+    <script src="../../js/perfect-scrollbar.jquery.min.js?1711093730"></script>
+    <script src="../../js/jquery.sticky.js?1711093730"></script>
+    <script src="../../js/featherlight.min.js?1711093730"></script>
+    <script src="../../js/highlight.pack.js?1711093730"></script>
+    <script>hljs.initHighlightingOnLoad();</script>
+    <script src="../../js/modernizr.custom-3.6.0.js?1711093730"></script>
+    <script src="../../js/learn.js?1711093730"></script>
+    <script src="../../js/hugo-learn.js?1711093730"></script>
+
+    <link href="../../mermaid/mermaid.css?1711093730" rel="stylesheet" />
+    <script src="../../mermaid/mermaid.js?1711093730"></script>
+    <script>
+        mermaid.initialize({ startOnLoad: true });
+    </script>
+    <script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-158079754-2', 'auto');
+  ga('send', 'pageview');
+
+</script>
+  </body>
+</html>
